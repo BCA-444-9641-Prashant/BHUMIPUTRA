@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}CSRF Test - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>CSRF Test</h1>
+    <p>This page tests CSRF functionality.</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Test CSRF</button>
+    </form>
+</div>
+{% endblock %}

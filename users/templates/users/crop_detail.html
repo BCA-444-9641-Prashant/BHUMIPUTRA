@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ crop.name }} - Crop Details{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-seedling me-2"></i>{{ crop.name }}</h1>
+    <a href="{% url 'crop_cards' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Crops
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            {% if crop.image %}
+                <img src="{{ crop.image.url }}" class="card-img-top" alt="{{ crop.name }}" style="height: 250px; object-fit: cover;">
+            {% else %}
+                <img src="https://via.placeholder.com/400x250/28a745/ffffff?text={{ crop.name }}" class="card-img-top" alt="{{ crop.name }}" style="height: 250px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body text-center">
+                <h5 class="card-title">{{ crop.name }}</h5>
+                <p class="text-success fw-bold">
+                    <i class="fas fa-rupee-sign me-1"></i>{{ crop.market_price }}/kg
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle me-2"></i>Crop Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6>Description</h6>
+                        <p>{{ crop.description }}</p>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <h6><i class="fas fa-thermometer-half text-danger me-2"></i>Temperature</h6>
+                            <p class="mb-0">{{ crop.temperature }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <h6><i class="fas fa-mountain text-warning me-2"></i>Soil Type</h6>
+                            <p class="mb-0">{{ crop.soil_type }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box">
+                            <h6><i class="fas fa-tint text-info me-2"></i>Water Level</h6>
+                            <p class="mb-0">{{ crop.water_level }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-success">
+                            <h6><i class="fas fa-lightbulb me-2"></i>Growing Tips</h6>
+                            <ul class="mb-0">
+                                <li>Maintain soil pH between 6.0-7.0 for optimal growth</li>
+                                <li>Apply nitrogen-rich fertilizer during vegetative stage</li>
+                                <li>Ensure proper drainage to prevent waterlogging</li>
+                                <li>Monitor for pests and diseases regularly</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.info-box {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid #28a745;
+}
+</style>
+{% endblock %}

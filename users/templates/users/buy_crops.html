@@ -1,0 +1,508 @@
+{% extends 'base.html' %}
+
+{% block title %}Buy Crops - BHUMIPUTRA{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section mb-4" data-aos="fade-down">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="hero-content">
+                <h1 class="display-5 fw-bold text-white mb-3">
+                    <i class="fas fa-shopping-basket me-3"></i>Buy Fresh Crops
+                </h1>
+                <p class="lead text-white-50 mb-0">Discover high-quality crops directly from local farmers. Fresh, organic, and sustainably grown.</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'buyer_dashboard' %}" class="btn btn-light">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="row mb-4" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card filter-card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Search crops..." id="searchInput">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="gradeFilter">
+                            <option value="">All Grades</option>
+                            <option value="A">Grade A - Premium</option>
+                            <option value="B">Grade B - Good</option>
+                            <option value="C">Grade C - Standard</option>
+                            <option value="D">Grade D - Basic</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="priceFilter">
+                            <option value="">Price Range</option>
+                            <option value="0-50">₹0 - ₹50/kg</option>
+                            <option value="50-100">₹50 - ₹100/kg</option>
+                            <option value="100-200">₹100 - ₹200/kg</option>
+                            <option value="200+">₹200+/kg</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100" onclick="applyFilters()">
+                            <i class="fas fa-filter me-2"></i>Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Crops Grid -->
+<div class="row">
+    {% if crops %}
+        {% for crop in crops %}
+        <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}">
+            <div class="card crop-card h-100">
+                <div class="crop-image-container">
+                    {% if crop.photo %}
+                        <img src="{{ crop.photo.url }}" class="card-img-top crop-image" alt="{{ crop.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400x250/4CAF50/ffffff?text={{ crop.name|urlencode }}" class="card-img-top crop-image" alt="{{ crop.name }}">
+                    {% endif %}
+                    <div class="crop-badge">
+                        <span class="badge bg-success">Grade {{ crop.grade }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="crop-header">
+                        <h5 class="crop-title">{{ crop.name }}</h5>
+                        <div class="farmer-info">
+                            <i class="fas fa-user me-1"></i>
+                            <small>{{ crop.farmer.username|title }}</small>
+                        </div>
+                    </div>
+                    
+                    {% if crop.description %}
+                    <p class="crop-description">{{ crop.description|truncatewords:15 }}</p>
+                    {% endif %}
+                    
+                    <div class="crop-details">
+                        <div class="detail-item">
+                            <i class="fas fa-rupee-sign me-2 text-success"></i>
+                            <span class="fw-bold text-success">₹{{ crop.price }}/kg</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-weight me-2 text-primary"></i>
+                            <span>{{ crop.quantity }} kg available</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-calendar me-2 text-info"></i>
+                            <span>Added {{ crop.created_at|date:"d M Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-danger flex-fill" onclick="toggleFavorite({{ crop.id }})">
+                            <i class="fas fa-heart me-1"></i>Save
+                        </button>
+                        <button class="btn btn-primary flex-fill" onclick="buyCrop({{ crop.id }}, '{{ crop.name }}', {{ crop.price }}, {{ crop.quantity }})">
+                            <i class="fas fa-shopping-cart me-1"></i>Buy Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="text-center py-5" data-aos="fade-up">
+                <div class="empty-state">
+                    <i class="fas fa-seedling fa-5x text-muted mb-4"></i>
+                    <h5>No Crops Available</h5>
+                    <p class="text-muted">No crops are currently available for purchase. Check back later!</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Buy Crop Modal -->
+<div class="modal fade" id="buyCropModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Complete Your Purchase</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="buyCropForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="crop_id" name="crop_id">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="crop-preview">
+                                <img id="modal_crop_image" src="" class="img-fluid rounded" alt="Crop">
+                                <h6 id="modal_crop_name" class="mt-2"></h6>
+                                <p class="text-muted">Grade: <span id="modal_crop_grade"></span></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="purchase-details">
+                                <div class="mb-3">
+                                    <label for="purchase_quantity" class="form-label">Quantity (kg)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="purchase_quantity" name="quantity" min="1" required>
+                                        <span class="input-group-text">kg</span>
+                                    </div>
+                                    <small class="text-muted">Available: <span id="available_quantity"></span> kg</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Price per kg</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="text" class="form-control" id="price_per_kg" readonly>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Total Amount</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="text" class="form-control" id="total_amount" readonly>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="delivery_address" class="form-label">Delivery Address</label>
+                                    <textarea class="form-control" id="delivery_address" name="delivery_address" rows="3" required placeholder="Enter your complete delivery address"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="proceedToPayment()">
+                    <i class="fas fa-credit-card me-2"></i>Proceed to Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Complete Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="payment-summary mb-4">
+                    <h6>Order Summary</h6>
+                    <p><strong>Crop:</strong> <span id="payment_crop_name"></span></p>
+                    <p><strong>Quantity:</strong> <span id="payment_quantity"></span> kg</p>
+                    <p><strong>Total Amount:</strong> ₹<span id="payment_total"></span></p>
+                </div>
+                
+                <div class="qr-section mb-4">
+                    <h6>Scan QR Code to Pay</h6>
+                    <div class="qr-code-placeholder">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=bhumiputra@pay&pn=BHUMIPUTRA&am={{ total_amount }}&cu=INR" alt="QR Code" class="img-fluid">
+                    </div>
+                    <p class="text-muted">Scan with any UPI app to complete payment</p>
+                </div>
+                
+                <div class="payment-options">
+                    <h6>Or Pay With</h6>
+                    <button class="btn btn-primary w-100 mb-2" onclick="initiateRazorpay()">
+                        <i class="fas fa-credit-card me-2"></i>Pay with Razorpay
+                    </button>
+                    <button class="btn btn-success w-100" onclick="confirmUPIPayment()">
+                        <i class="fas fa-mobile-alt me-2"></i>I've Paid via UPI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function buyCrop(cropId, cropName, price, availableQuantity) {
+    document.getElementById('crop_id').value = cropId;
+    document.getElementById('modal_crop_name').textContent = cropName;
+    document.getElementById('modal_crop_grade').textContent = 'A'; // This would come from crop data
+    document.getElementById('available_quantity').textContent = availableQuantity;
+    document.getElementById('price_per_kg').value = price;
+    document.getElementById('purchase_quantity').max = availableQuantity;
+    document.getElementById('purchase_quantity').value = 1;
+    
+    // Set default image
+    document.getElementById('modal_crop_image').src = `https://via.placeholder.com/300x200/4CAF50/ffffff?text=${cropName}`;
+    
+    calculateTotal();
+    
+    const modal = new bootstrap.Modal(document.getElementById('buyCropModal'));
+    modal.show();
+}
+
+function calculateTotal() {
+    const quantity = parseFloat(document.getElementById('purchase_quantity').value) || 0;
+    const price = parseFloat(document.getElementById('price_per_kg').value) || 0;
+    const total = quantity * price;
+    document.getElementById('total_amount').value = total.toFixed(2);
+}
+
+function proceedToPayment() {
+    const quantity = document.getElementById('purchase_quantity').value;
+    const total = document.getElementById('total_amount').value;
+    const cropName = document.getElementById('modal_crop_name').textContent;
+    
+    document.getElementById('payment_crop_name').textContent = cropName;
+    document.getElementById('payment_quantity').textContent = quantity;
+    document.getElementById('payment_total').textContent = total;
+    
+    // Close buy modal and show payment modal
+    bootstrap.Modal.getInstance(document.getElementById('buyCropModal')).hide();
+    const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    paymentModal.show();
+}
+
+function initiateRazorpay() {
+    const amount = parseFloat(document.getElementById('payment_total').value) * 100; // Convert to paise
+    const cropName = document.getElementById('payment_crop_name').textContent;
+    
+    var options = {
+        "key": "rzp_test_1DP5mmOlF5G9ag", // Test key - replace with your actual key
+        "amount": amount,
+        "currency": "INR",
+        "name": "BHUMIPUTRA",
+        "description": `Purchase of ${cropName}`,
+        "image": "https://via.placeholder.com/100x100/4CAF50/ffffff?text=Logo",
+        "handler": function (response) {
+            alert('Payment successful! Payment ID: ' + response.razorpay_payment_id);
+            completePurchase();
+        },
+        "prefill": {
+            "name": "{{ user.username }}",
+            "email": "{{ user.email }}",
+        },
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+    
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+}
+
+function confirmUPIPayment() {
+    if (confirm('Have you completed the UPI payment?')) {
+        completePurchase();
+    }
+}
+
+function completePurchase() {
+    // Get form data
+    const cropId = document.getElementById('crop_id').value;
+    const quantity = document.getElementById('purchase_quantity').value;
+    const deliveryAddress = document.getElementById('delivery_address').value;
+    
+    // Create order via AJAX
+    const formData = new FormData();
+    formData.append('crop_id', cropId);
+    formData.append('quantity', quantity);
+    formData.append('delivery_address', deliveryAddress);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch('/create-crop-order/', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Order placed successfully! Order ID: #' + data.order_id);
+            
+            // Close modals
+            bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+            
+            // Redirect to orders page
+            window.location.href = '/crop-orders/';
+        } else {
+            alert('Error placing order: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error placing order. Please try again.');
+    });
+}
+
+function toggleFavorite(cropId) {
+    // This would typically handle favorite functionality
+    alert('Favorite functionality would be implemented here');
+}
+
+function applyFilters() {
+    // This would typically apply filters
+    alert('Filter functionality would be implemented here');
+}
+
+// Calculate total when quantity changes
+document.getElementById('purchase_quantity').addEventListener('input', calculateTotal);
+</script>
+
+<style>
+.crop-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.crop-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.crop-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.crop-image {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.crop-card:hover .crop-image {
+    transform: scale(1.05);
+}
+
+.crop-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.crop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.crop-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark-green);
+    margin-bottom: 0;
+}
+
+.farmer-info {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.crop-description {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.crop-details {
+    margin-bottom: 15px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    border: 2px dashed #dee2e6;
+}
+
+.empty-state i {
+    color: #adb5bd;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.crop-preview img {
+    border-radius: 10px;
+    border: 2px solid var(--primary-green);
+}
+
+.payment-summary {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.qr-code-placeholder {
+    padding: 20px;
+    background: white;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary-green), var(--light-green));
+    border: none;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, var(--dark-green), var(--primary-green));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(46, 125, 50, 0.3);
+}
+
+.btn-success {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    border: none;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background: linear-gradient(45deg, #218838, #1ea085);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+}
+</style>
+{% endblock %}

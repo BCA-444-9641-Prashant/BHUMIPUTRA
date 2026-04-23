@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - BHUMIPUTRA{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h1>
+    <div>
+        <a href="{% url 'adminpanel:admin_logout' %}" class="btn btn-outline-danger">
+            <i class="fas fa-sign-out-alt me-2"></i>Logout
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-users me-2"></i>Total Users
+            </div>
+            <div class="card-body">
+                <h3 class="stat-number" data-target="{{ total_users }}">{{ total_users }}</h3>
+                <p class="text-muted mb-0">Registered users</p>
+                <a href="{% url 'adminpanel:user_list' %}" class="btn btn-sm btn-outline-primary mt-2">
+                    View All <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-user-tie me-2"></i>Farmers
+            </div>
+            <div class="card-body">
+                <h3 class="stat-number" data-target="{{ total_farmers }}">{{ total_farmers }}</h3>
+                <p class="text-muted mb-0">Registered farmers</p>
+                <a href="{% url 'adminpanel:user_list' %}" class="btn btn-sm btn-outline-primary mt-2">
+                    Manage <i class="fas fa-cog ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-shopping-cart me-2"></i>Buyers
+            </div>
+            <div class="card-body">
+                <h3 class="stat-number" data-target="{{ total_buyers }}">{{ total_buyers }}</h3>
+                <p class="text-muted mb-0">Registered buyers</p>
+                <a href="{% url 'adminpanel:user_list' %}" class="btn btn-sm btn-outline-primary mt-2">
+                    Manage <i class="fas fa-cog ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-tractor me-2"></i>Farms
+            </div>
+            <div class="card-body">
+                <h3 class="stat-number" data-target="{{ total_farms }}">{{ total_farms }}</h3>
+                <p class="text-muted mb-0">Registered farms</p>
+                <a href="{% url 'adminpanel:farm_monitoring' %}" class="btn btn-sm btn-outline-primary mt-2">
+                    Monitor <i class="fas fa-eye ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-bullhorn me-2"></i>Government Schemes
+            </div>
+            <div class="card-body">
+                <h3 class="stat-number" data-target="{{ total_schemes }}">{{ total_schemes }}</h3>
+                <p class="text-muted mb-0">Manage schemes</p>
+                <div class="mt-2">
+                    <a href="{% url 'adminpanel:scheme_home' %}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-arrow-right"></i> Manage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-seedling me-2"></i>Crops
+            </div>
+            <div class="card-body">
+                <h3 class="stat-number" data-target="{{ total_crops }}">{{ total_crops }}</h3>
+                <p class="text-muted mb-0">Crop varieties</p>
+                <div class="mt-2">
+                    <a href="{% url 'adminpanel:crop_create' %}" class="btn btn-sm btn-success me-1">
+                        <i class="fas fa-plus"></i> Add
+                    </a>
+                    <a href="{% url 'adminpanel:crop_list' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-list"></i> View
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-tools me-2"></i>Equipment
+            </div>
+            <div class="card-body">
+                <h3 class="stat-number" data-target="{{ total_equipment }}">{{ total_equipment }}</h3>
+                <p class="text-muted mb-0">Equipment items</p>
+                <div class="mt-2">
+                    <a href="{% url 'adminpanel:equipment_create' %}" class="btn btn-sm btn-success me-1">
+                        <i class="fas fa-plus"></i> Add
+                    </a>
+                    <a href="{% url 'adminpanel:equipment_list' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-list"></i> View
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-graduation-cap me-2"></i>Courses
+            </div>
+            <div class="card-body">
+                <h3 class="stat-number" data-target="{{ total_courses }}">{{ total_courses }}</h3>
+                <p class="text-muted mb-0">Training courses</p>
+                <div class="mt-2">
+                    <a href="{% url 'adminpanel:course_create' %}" class="btn btn-sm btn-success me-1">
+                        <i class="fas fa-plus"></i> Add
+                    </a>
+                    <a href="{% url 'adminpanel:course_list' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-list"></i> View
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-line me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'adminpanel:user_create' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-user-plus me-2"></i>Add New User
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'adminpanel:scheme_create' %}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-bullhorn me-2"></i>Post Scheme
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'adminpanel:equipment_create' %}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-tools me-2"></i>Add Equipment
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'adminpanel:course_create' %}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-eye me-2"></i>Monitor Farms
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

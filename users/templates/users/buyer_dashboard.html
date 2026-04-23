@@ -1,0 +1,677 @@
+{% extends 'base.html' %}
+
+{% block title %}Buyer Dashboard - BHUMIPUTRA{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section mb-4" data-aos="fade-down">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="hero-content">
+                <h1 class="display-5 fw-bold text-white mb-3">
+                    <i class="fas fa-shopping-cart me-3"></i>Welcome to Your Marketplace
+                </h1>
+                <p class="lead text-white-50 mb-0">Discover quality agricultural products, equipment, and training. Your one-stop shop for all farming needs.</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="user-profile-card">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle fa-4x text-white"></i>
+                </div>
+                <div class="profile-info">
+                    <h6 class="text-white mb-0">{{ user.username|title }}</h6>
+                    <small class="text-white-50">Buyer</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-seedling fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">{{ total_crops }}</h3>
+                <p class="stats-label">Crop Varieties</p>
+                <a href="{% url 'crop_cards' %}" class="btn btn-sm btn-light mt-2">
+                    Browse Crops <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="stats-icon">
+                <i class="fas fa-tools fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">{{ total_equipment }}</h3>
+                <p class="stats-label">Equipment Available</p>
+                <a href="{% url 'equipment_list' %}" class="btn btn-sm btn-light mt-2">
+                    Rent Equipment <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="stats-icon">
+                <i class="fas fa-graduation-cap fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">{{ total_courses }}</h3>
+                <p class="stats-label">Training Courses</p>
+                <a href="{% url 'course_list' %}" class="btn btn-sm btn-light mt-2">
+                    Browse Courses <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+        <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="stats-icon">
+                <i class="fas fa-chart-line fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">Market Insights</h3>
+                <p class="stats-label">Real-time Updates</p>
+                <a href="#" class="btn btn-sm btn-light mt-2">
+                    View Analytics <i class="fas fa-chart-bar ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-xl-6 mb-4" data-aos="fade-right">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-gradient" style="background: linear-gradient(45deg, var(--accent-orange), var(--warm-yellow));">
+                <h5 class="mb-0 text-white">
+                    <i class="fas fa-shopping-cart me-2"></i>Shopping Cart
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="cart-preview">
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-basket fa-3x text-warning"></i>
+                    </div>
+                    <div class="cart-content">
+                        <h6>Your Shopping Cart</h6>
+                        <p class="text-muted mb-3">View and manage your selected items</p>
+                        <div class="cart-stats">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h4 class="text-warning">0</h4>
+                                    <small class="text-muted">Items</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-primary">₹0</h4>
+                                    <small class="text-muted">Total</small>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{% url 'cart' %}" class="btn btn-warning w-100 mt-3">
+                            <i class="fas fa-shopping-cart me-2"></i>View Cart
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-6 mb-4" data-aos="fade-left">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-gradient" style="background: linear-gradient(45deg, var(--sky-blue), var(--primary-green));">
+                <h5 class="mb-0 text-white">
+                    <i class="fas fa-history me-2"></i>Order History
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="order-preview">
+                    <div class="order-icon">
+                        <i class="fas fa-clipboard-list fa-3x text-info"></i>
+                    </div>
+                    <div class="order-content">
+                        <h6>Your Orders</h6>
+                        <p class="text-muted mb-3">Track your order history and delivery status</p>
+                        <div class="order-stats">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h4 class="text-info">0</h4>
+                                    <small class="text-muted">Orders</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-success">0</h4>
+                                    <small class="text-muted">Completed</small>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{% url 'order_history' %}" class="btn btn-info w-100 mt-3">
+                            <i class="fas fa-history me-2"></i>View Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Buy Crops Section -->
+<div class="row mb-4" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-seedling me-2" style="color: var(--primary-green);"></i>Buy Fresh Crops
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="fas fa-shopping-basket fa-3x text-success"></i>
+                            </div>
+                            <div class="action-content">
+                                <h5 class="action-title">Browse Crops</h5>
+                                <p class="action-description">Explore fresh crops from local farmers</p>
+                                <a href="{% url 'buy_crops' %}" class="btn btn-success">
+                                    <i class="fas fa-search me-2"></i>Browse Crops
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="200">
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="fas fa-receipt fa-3x text-info"></i>
+                            </div>
+                            <div class="action-content">
+                                <h5 class="action-title">My Orders</h5>
+                                <p class="action-description">Track your crop purchases and deliveries</p>
+                                <a href="{% url 'crop_orders' %}" class="btn btn-info">
+                                    <i class="fas fa-list me-2"></i>View Orders
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="300">
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="fas fa-heart fa-3x text-danger"></i>
+                            </div>
+                            <div class="action-content">
+                                <h5 class="action-title">Favorites</h5>
+                                <p class="action-description">Save your favorite crops and farmers</p>
+                                <a href="#" class="btn btn-danger" onclick="alert('Favorites feature coming soon!')">
+                                    <i class="fas fa-star me-2"></i>View Favorites
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Products Section -->
+<div class="row mb-4" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-star me-2" style="color: var(--warm-yellow);"></i>Featured Products
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="products-grid">
+                    <div class="product-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x200/28a745/ffffff?text=Wheat" alt="Premium Wheat">
+                            <div class="product-badge">Bestseller</div>
+                        </div>
+                        <div class="product-content">
+                            <h6 class="product-title">Premium Wheat</h6>
+                            <p class="product-description">High-quality wheat from local farms</p>
+                            <div class="product-rating">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                                <small>(4.5)</small>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">₹25/kg</span>
+                                <span class="original-price">₹30/kg</span>
+                                <span class="discount-badge">-17%</span>
+                            </div>
+                            <button class="btn btn-primary w-100">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x200/20c997/ffffff?text=Rice" alt="Basmati Rice">
+                            <div class="product-badge">Premium</div>
+                        </div>
+                        <div class="product-content">
+                            <h6 class="product-title">Basmati Rice</h6>
+                            <p class="product-description">Aromatic basmati rice from certified farms</p>
+                            <div class="product-rating">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <small>(5.0)</small>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">₹80/kg</span>
+                                <span class="original-price">₹100/kg</span>
+                                <span class="discount-badge">-20%</span>
+                            </div>
+                            <button class="btn btn-primary w-100">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x200/ffc107/ffffff?text=Pulses" alt="Fresh Pulses">
+                            <div class="product-badge">Organic</div>
+                        </div>
+                        <div class="product-content">
+                            <h6 class="product-title">Fresh Pulses</h6>
+                            <p class="product-description">Organic pulses and lentils</p>
+                            <div class="product-rating">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                                <small>(4.5)</small>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">₹120/kg</span>
+                                <span class="original-price">₹150/kg</span>
+                                <span class="discount-badge">-20%</span>
+                            </div>
+                            <button class="btn btn-primary w-100">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Special Offers Section -->
+<div class="row mb-4" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-percentage me-2" style="color: var(--accent-orange);"></i>Special Offers & Promotions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="offers-grid">
+                    <div class="offer-card" data-aos="fade-right" data-aos-delay="100">
+                        <div class="offer-icon">
+                            <i class="fas fa-tag fa-2x text-success"></i>
+                        </div>
+                        <div class="offer-content">
+                            <h6>Seasonal Sale</h6>
+                            <p class="text-muted">Get 20% off on all winter crops</p>
+                            <div class="offer-details">
+                                <small class="text-muted">Limited time offer</small>
+                                <span class="offer-expiry">Valid until: March 31, 2024</span>
+                            </div>
+                            <button class="btn btn-success btn-sm">
+                                <i class="fas fa-gift me-2"></i>Claim Offer
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="offer-card" data-aos="fade-right" data-aos-delay="200">
+                        <div class="offer-icon">
+                            <i class="fas fa-truck fa-2x text-info"></i>
+                        </div>
+                        <div class="offer-content">
+                            <h6>Free Delivery</h6>
+                            <p class="text-muted">Free delivery on orders above ₹1000</p>
+                            <div class="offer-details">
+                                <small class="text-muted">Within city limits</small>
+                                <span class="offer-expiry">Terms apply</span>
+                            </div>
+                            <button class="btn btn-info btn-sm">
+                                <i class="fas fa-info-circle me-2"></i>Learn More
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="offer-card" data-aos="fade-right" data-aos-delay="300">
+                        <div class="offer-icon">
+                            <i class="fas fa-percentage fa-2x text-warning"></i>
+                        </div>
+                        <div class="offer-content">
+                            <h6>Bundle Discount</h6>
+                            <p class="text-muted">Buy 3 get 1 free on selected items</p>
+                            <div class="offer-details">
+                                <small class="text-muted">On selected products</small>
+                                <span class="offer-expiry">While stocks last</span>
+                            </div>
+                            <button class="btn btn-warning btn-sm">
+                                <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Market Updates Section -->
+<div class="row" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-newspaper me-2" style="color: var(--sky-blue);"></i>Market Updates & News
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="news-timeline">
+                    <div class="timeline-item" data-aos="fade-right">
+                        <div class="timeline-dot bg-success"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">Wheat Prices Rise</h6>
+                                    <p class="text-muted mb-2">Wheat prices increased by 5% due to high demand in the market.</p>
+                                    <div class="news-meta">
+                                        <span class="badge bg-light text-dark">Market Update</span>
+                                        <span class="text-muted">Today</span>
+                                    </div>
+                                </div>
+                                <small class="text-muted">2 hours ago</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item" data-aos="fade-right" data-aos-delay="100">
+                        <div class="timeline-dot bg-primary"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">New Crop Varieties Available</h6>
+                                    <p class="text-muted mb-2">Check out our new collection of organic vegetables and hybrid seeds.</p>
+                                    <div class="news-meta">
+                                        <span class="badge bg-light text-dark">New Arrival</span>
+                                        <span class="text-muted">Yesterday</span>
+                                    </div>
+                                </div>
+                                <small class="text-muted">1 day ago</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item" data-aos="fade-right" data-aos-delay="200">
+                        <div class="timeline-dot bg-warning"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">Equipment Rental Discount</h6>
+                                    <p class="text-muted mb-2">15% off on all farming equipment rentals this week. Limited time offer.</p>
+                                    <div class="news-meta">
+                                        <span class="badge bg-light text-dark">Promotion</span>
+                                        <span class="text-muted">2 days ago</span>
+                                    </div>
+                                </div>
+                                <small class="text-muted">2 days ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.product-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.product-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-image img {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+.product-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--accent-orange);
+    color: white;
+    text-transform: uppercase;
+}
+
+.product-content {
+    padding: 20px;
+}
+
+.product-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark-green);
+    margin-bottom: 8px;
+}
+
+.product-description {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 12px;
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 12px;
+}
+
+.product-price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.current-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-green);
+}
+
+.original-price {
+    font-size: 1rem;
+    color: #6c757d;
+    text-decoration: line-through;
+}
+
+.discount-badge {
+    background: var(--accent-orange);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.offer-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.offer-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.offer-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.offer-content {
+    flex: 1;
+}
+
+.offer-details {
+    margin-top: 10px;
+}
+
+.offer-expiry {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.news-timeline {
+    position: relative;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 40px;
+    margin-bottom: 30px;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    border-left: 3px solid var(--primary-green);
+}
+
+.news-meta {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.cart-preview, .order-preview {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.cart-icon, .order-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.1);
+}
+
+.cart-content, .order-content {
+    flex: 1;
+}
+
+.cart-stats .row {
+    margin: 15px 0;
+}
+
+.cart-stats h4 {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .offers-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .offer-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Crop - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-seedling me-2"></i>Add New Crop</h1>
+    <a href="{% url 'adminpanel:crop_list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Crops
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-seedling me-2"></i>Crop Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Crop Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <div class="invalid-feedback">
+                                Please provide a crop name.
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="market_price" class="form-label">Market Price (₹/kg) *</label>
+                            <input type="number" class="form-control" id="market_price" name="market_price" step="0.01" min="0" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid market price.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description *</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                        <div class="invalid-feedback">
+                            Please provide a description.
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="temperature" class="form-label">Temperature Requirements *</label>
+                            <input type="text" class="form-control" id="temperature" name="temperature" placeholder="e.g., 25-30°C" required>
+                            <div class="invalid-feedback">
+                                Please provide temperature requirements.
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="soil_type" class="form-label">Soil Type *</label>
+                            <input type="text" class="form-control" id="soil_type" name="soil_type" placeholder="e.g., Loamy Soil" required>
+                            <div class="invalid-feedback">
+                                Please provide soil type.
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="water_level" class="form-label">Water Level *</label>
+                            <input type="text" class="form-control" id="water_level" name="water_level" placeholder="e.g., Moderate" required>
+                            <div class="invalid-feedback">
+                                Please provide water level requirements.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Crop Image (Optional)</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                        <div class="form-text">Upload an image of the crop (JPG, PNG, GIF)</div>
+                        <img id="image-preview" class="mt-2" style="max-width: 200px; display: none;">
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'adminpanel:crop_list' %}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Add Crop
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

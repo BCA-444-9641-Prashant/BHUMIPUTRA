@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Scheme Management - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-bullhorn me-2"></i>Scheme Management</h1>
+    <a href="{% url 'adminpanel:admin_dashboard' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-5 mb-4">
+        <div class="card h-100 scheme-card" style="cursor: pointer; transition: transform 0.2s;" onclick="window.location.href='{% url 'adminpanel:scheme_create' %}'">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-plus-circle fa-4x text-success"></i>
+                </div>
+                <h4 class="card-title">Add Scheme</h4>
+                <p class="card-text text-muted">Create and publish new government schemes for farmers</p>
+                <button class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Add New Scheme
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-5 mb-4">
+        <div class="card h-100 scheme-card" style="cursor: pointer; transition: transform 0.2s;" onclick="window.location.href='{% url 'adminpanel:scheme_list' %}'">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-list fa-4x text-primary"></i>
+                </div>
+                <h4 class="card-title">View All Schemes</h4>
+                <p class="card-text text-muted">Manage and update existing government schemes</p>
+                <button class="btn btn-primary">
+                    <i class="fas fa-eye me-2"></i>View Schemes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.scheme-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.scheme-card {
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    border-radius: 15px;
+}
+
+.scheme-card .card-body {
+    padding: 3rem 2rem;
+}
+</style>
+{% endblock %}

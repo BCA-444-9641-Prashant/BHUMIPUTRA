@@ -1,0 +1,368 @@
+{% extends 'base.html' %}
+
+{% block title %}My Crop Orders - BHUMIPUTRA{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section mb-4" data-aos="fade-down">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="hero-content">
+                <h1 class="display-5 fw-bold text-white mb-3">
+                    <i class="fas fa-receipt me-3"></i>My Crop Orders
+                </h1>
+                <p class="lead text-white-50 mb-0">Track your crop purchases, delivery status, and order history.</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'buyer_dashboard' %}" class="btn btn-light">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Order Stats -->
+<div class="row mb-4" data-aos="fade-up">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-shopping-bag fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">{{ total_orders }}</h3>
+                <p class="stats-label">Total Orders</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="stats-icon">
+                <i class="fas fa-truck fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">{{ pending_orders }}</h3>
+                <p class="stats-label">Pending Delivery</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="stats-icon">
+                <i class="fas fa-check-circle fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">{{ completed_orders }}</h3>
+                <p class="stats-label">Completed</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="stats-icon">
+                <i class="fas fa-rupee-sign fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">₹{{ total_spent|floatformat:0 }}</h3>
+                <p class="stats-label">Total Spent</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Orders List -->
+<div class="row" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2" style="color: var(--primary-green);"></i>Your Orders
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if orders %}
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        {% for order in orders %}
+                        <div class="col" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}">
+                            <div class="card order-card h-100">
+                                <div class="order-image-container">
+                                    {% if order.crop.photo %}
+                                        <img src="{{ order.crop.photo.url }}" class="card-img-top order-image" alt="{{ order.crop.name }}">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/400x250/4CAF50/ffffff?text={{ order.crop.name|urlencode }}" class="card-img-top order-image" alt="{{ order.crop.name }}">
+                                    {% endif %}
+                                    <div class="order-status">
+                                        {% if order.status == 'Pending' %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>{{ order.status }}
+                                            </span>
+                                        {% elif order.status == 'Confirmed' %}
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-check me-1"></i>{{ order.status }}
+                                            </span>
+                                        {% elif order.status == 'Delivered' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-truck me-1"></i>{{ order.status }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-info me-1"></i>{{ order.status }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="order-header">
+                                        <h6 class="order-title">{{ order.crop.name }}</h6>
+                                        <div class="order-id">
+                                            <small class="text-muted">Order #{{ order.id }}</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="order-details">
+                                        <div class="detail-item">
+                                            <i class="fas fa-user me-2 text-primary"></i>
+                                            <span>{{ order.crop.farmer.username|title }}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-weight me-2 text-info"></i>
+                                            <span>{{ order.quantity }} kg</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-rupee-sign me-2 text-success"></i>
+                                            <span class="fw-bold">₹{{ order.total_amount }}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-calendar me-2 text-warning"></i>
+                                            <span>{{ order.created_at|date:"d M Y" }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if order.delivery_address %}
+                                    <div class="delivery-info">
+                                        <small class="text-muted">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ order.delivery_address|truncatewords:10 }}
+                                        </small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-info flex-fill" onclick="viewOrderDetails({{ order.id }})">
+                                            <i class="fas fa-eye me-1"></i>Details
+                                        </button>
+                                        {% if order.status == 'Delivered' %}
+                                        <button class="btn btn-sm btn-outline-success flex-fill" onclick="rateOrder({{ order.id }})">
+                                            <i class="fas fa-star me-1"></i>Rate
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5" data-aos="fade-up">
+                        <div class="empty-state">
+                            <i class="fas fa-receipt fa-5x text-muted mb-4"></i>
+                            <h5>No Orders Yet</h5>
+                            <p class="text-muted">You haven't placed any crop orders yet. Start shopping now!</p>
+                            <a href="{% url 'buy_crops' %}" class="btn btn-primary mt-3">
+                                <i class="fas fa-shopping-basket me-2"></i>Browse Crops
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Order Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="orderDetailsBody">
+                <!-- Order details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewOrderDetails(orderId) {
+    // This would typically fetch order details from the server
+    const orderDetails = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Order Information</h6>
+                <p><strong>Order ID:</strong> #${orderId}</p>
+                <p><strong>Status:</strong> <span class="badge bg-info">Pending</span></p>
+                <p><strong>Order Date:</strong> ${new Date().toLocaleDateString()}</p>
+                <p><strong>Payment Status:</strong> <span class="badge bg-success">Paid</span></p>
+            </div>
+            <div class="col-md-6">
+                <h6>Delivery Information</h6>
+                <p><strong>Delivery Address:</strong><br>
+                123 Farm Road, Agricutural Area, City - 123456</p>
+                <p><strong>Expected Delivery:</strong> 3-5 business days</p>
+            </div>
+        </div>
+        <hr>
+        <h6>Item Details</h6>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Premium Wheat</td>
+                        <td>5 kg</td>
+                        <td>₹50/kg</td>
+                        <td>₹250</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3">Total Amount:</th>
+                        <th>₹250</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    `;
+    
+    document.getElementById('orderDetailsBody').innerHTML = orderDetails;
+    const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+    modal.show();
+}
+
+function rateOrder(orderId) {
+    // This would typically open a rating modal
+    alert('Rating functionality would be implemented here for order #' + orderId);
+}
+</script>
+
+<style>
+.order-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.order-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.order-image {
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.order-card:hover .order-image {
+    transform: scale(1.05);
+}
+
+.order-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.order-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark-green);
+    margin-bottom: 0;
+}
+
+.order-id {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.order-details {
+    margin-bottom: 15px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+}
+
+.delivery-info {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e9ecef;
+}
+
+.empty-state {
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    border: 2px dashed #dee2e6;
+}
+
+.empty-state i {
+    color: #adb5bd;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary-green), var(--light-green));
+    border: none;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, var(--dark-green), var(--primary-green));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(46, 125, 50, 0.3);
+}
+</style>
+{% endblock %}

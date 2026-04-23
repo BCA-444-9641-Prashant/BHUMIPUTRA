@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ scheme.title }} - Government Scheme{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-bullhorn me-2"></i>{{ scheme.title }}</h1>
+    <a href="{% if user.role == 'farmer' %}{% url 'farmer_dashboard' %}{% else %}{% url 'buyer_dashboard' %}{% endif %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-success mb-3">{{ scheme.title }}</h4>
+                <h5 class="card-subtitle text-muted mb-4">{{ scheme.subtitle }}</h5>
+                
+                {% if scheme.photo %}
+                <div class="mb-4">
+                    <img src="{{ scheme.photo.url }}" class="img-fluid rounded shadow" alt="{{ scheme.title }}">
+                </div>
+                {% else %}
+                <div class="mb-4">
+                    <img src="https://via.placeholder.com/800x400/28a745/ffffff?text={{ scheme.title|urlencode }}" class="img-fluid rounded shadow" alt="{{ scheme.title }}">
+                </div>
+                {% endif %}
+                
+                <div class="scheme-content">
+                    <h5><i class="fas fa-info-circle me-2"></i>Scheme Description</h5>
+                    <div class="content-text">
+                        {{ scheme.description|linebreaks }}
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                <strong>Posted on:</strong> {{ scheme.created_at|date:"d F, Y" }}
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                <strong>Last Updated:</strong> {{ scheme.updated_at|date:"d F, Y" }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Print Scheme
+                    </button>
+                    <button class="btn btn-outline-success" onclick="shareScheme()">
+                        <i class="fas fa-share-alt me-2"></i>Share Scheme
+                    </button>
+                    <a href="{% url 'scheme_view' %}" class="btn btn-outline-info">
+                        <i class="fas fa-list me-2"></i>View All Schemes
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Need Help?</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text small">
+                    For more information about this government scheme, please contact your local agricultural office or visit the nearest government center.
+                </p>
+                <div class="text-center">
+                    <small class="text-muted">
+                        <i class="fas fa-phone me-1"></i>Helpline: 1800-xxx-xxxx<br>
+                        <i class="fas fa-envelope me-1"></i>support@bhumiputra.gov.in
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.content-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+.scheme-content {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #28a745;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.img-fluid {
+    max-height: 400px;
+    object-fit: cover;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
+</style>
+
+<script>
+function shareScheme() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ scheme.title }}',
+            text: '{{ scheme.subtitle }}',
+            url: window.location.href
+        }).then(() => {
+            console.log('Thanks for sharing!');
+        }).catch((error) => {
+            console.log('Error sharing:', error);
+        });
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        const dummy = document.createElement('input');
+        document.body.appendChild(dummy);
+        dummy.value = window.location.href;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+        alert('Scheme link copied to clipboard!');
+    }
+}
+</script>
+{% endblock %}

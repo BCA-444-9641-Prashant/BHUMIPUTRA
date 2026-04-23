@@ -1,0 +1,812 @@
+{% extends 'base.html' %}
+
+{% block title %}Equipment Rental - BHUMIPUTRA{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section mb-4" data-aos="fade-down">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="hero-content">
+                <h1 class="display-5 fw-bold text-white mb-3">
+                    <i class="fas fa-tools me-3"></i>Equipment Rental Service
+                </h1>
+                <p class="lead text-white-50 mb-0">Rent high-quality agricultural equipment at affordable prices. Boost your farm productivity with our modern machinery.</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% if user.role == 'farmer' %}{% url 'farmer_dashboard' %}{% else %}{% url 'buyer_dashboard' %}{% endif %}" class="btn btn-light">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="row mb-4" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card filter-card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Search equipment..." id="searchInput">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="tractor">Tractors</option>
+                            <option value="harvester">Harvesters</option>
+                            <option value="irrigation">Irrigation</option>
+                            <option value="tools">Tools</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="priceFilter">
+                            <option value="">Price Range</option>
+                            <option value="0-500">₹0 - ₹500/day</option>
+                            <option value="500-1000">₹500 - ₹1000/day</option>
+                            <option value="1000-2000">₹1000 - ₹2000/day</option>
+                            <option value="2000+">₹2000+/day</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100" onclick="applyFilters()">
+                            <i class="fas fa-filter me-2"></i>Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Equipment Grid -->
+<div class="row">
+    {% if equipment %}
+        {% for item in equipment %}
+        <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}">
+            <div class="card equipment-card h-100">
+                <div class="equipment-image-container">
+                    {% if item.photo %}
+                        <img src="{{ item.photo.url }}" class="card-img-top equipment-image" alt="{{ item.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400x250/4CAF50/ffffff?text={{ item.name|urlencode }}" class="card-img-top equipment-image" alt="{{ item.name }}">
+                    {% endif %}
+                    {% if item.is_available %}
+                        <div class="equipment-badge available">
+                            <i class="fas fa-check-circle me-1"></i>Available
+                        </div>
+                    {% else %}
+                        <div class="equipment-badge unavailable">
+                            <i class="fas fa-clock me-1"></i>On Rent
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="equipment-header">
+                        <h5 class="card-title">{{ item.name }}</h5>
+                        <div class="equipment-rating">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                            <small class="text-muted">(4.5)</small>
+                        </div>
+                    </div>
+                    <p class="card-text text-muted">{{ item.description|truncatewords:20 }}</p>
+                    
+                    <div class="equipment-details">
+                        <div class="detail-item">
+                            <i class="fas fa-rupee-sign me-2 text-success"></i>
+                            <span class="fw-bold text-success">{{ item.rent_per_day }}</span>
+                            <span class="text-muted">/day</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-boxes me-2 text-info"></i>
+                            <span>{{ item.quantity_available }}</span>
+                            <span class="text-muted">/ {{ item.total_quantity }} units</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-info-circle me-2 text-primary"></i>
+                            <span class="badge bg-light text-dark">{{ item.get_status_display }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="availability-indicator mt-3">
+                        <div class="progress" style="height: 8px;">
+                            {% if item.quantity_available > item.total_quantity|add:"0" %}
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                <small class="text-muted">High availability</small>
+                            {% elif item.quantity_available > 0 %}
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                <small class="text-muted">Low availability</small>
+                            {% else %}
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 5%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"></div>
+                                <small class="text-muted">Not available</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    {% if item.is_available %}
+                        <button class="btn btn-primary w-100 rent-btn" 
+                            data-equipment-id="{{ item.pk }}" 
+                            data-equipment-name="{{ item.name|escapejs }}" 
+                            data-rent-per-day="{{ item.rent_per_day }}" 
+                            data-max-quantity="{{ item.quantity_available }}">
+                            <i class="fas fa-shopping-cart me-2"></i>Rent Now
+                        </button>
+                    {% else %}
+                        <button class="btn btn-secondary w-100" disabled>
+                            <i class="fas fa-times me-1"></i>On Rent
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="text-center py-5" data-aos="fade-up">
+                <div class="empty-state">
+                    <i class="fas fa-tools fa-5x text-muted mb-4"></i>
+                    <h5>No Equipment Available</h5>
+                    <p class="text-muted">No farming equipment is available for rent at the moment. Please check back later.</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Equipment Section -->
+<div id="equipment-section" class="row mb-5">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-tools me-2" style="color: var(--primary-green);"></i>Available Equipment
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if equipment %}
+                    <div class="row">
+                        {% for item in equipment %}
+                        <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}">
+                            <div class="card equipment-card h-100">
+                                <div class="equipment-image-container">
+                                    {% if item.photo %}
+                                        <img src="{{ item.photo.url }}" class="card-img-top equipment-image" alt="{{ item.name }}">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/400x250/4CAF50/ffffff?text={{ item.name|urlencode }}" class="card-img-top equipment-image" alt="{{ item.name }}">
+                                    {% endif %}
+                                    {% if item.is_available %}
+                                        <div class="equipment-badge available">
+                                            <i class="fas fa-check-circle me-1"></i>Available
+                                        </div>
+                                    {% else %}
+                                        <div class="equipment-badge unavailable">
+                                            <i class="fas fa-clock me-1"></i>On Rent
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body">
+                                    <div class="equipment-header">
+                                        <h5 class="equipment-title">{{ item.name }}</h5>
+                                    </div>
+                                    <p class="card-text text-muted">{{ item.description|truncatewords:20 }}</p>
+                                    
+                                    <div class="equipment-details">
+                                        <div class="detail-item">
+                                            <i class="fas fa-rupee-sign me-2 text-success"></i>
+                                            <span class="fw-bold text-success">{{ item.rent_per_day }}</span>
+                                            <span class="text-muted">/day</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-boxes me-2 text-info"></i>
+                                            <span>{{ item.quantity_available }}</span>
+                                            <span class="text-muted">/ {{ item.total_quantity }} units</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-info-circle me-2 text-primary"></i>
+                                            <span class="badge bg-light text-dark">{{ item.get_status_display }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="availability-indicator mt-3">
+                                        <div class="progress" style="height: 8px;">
+                                            {% if item.quantity_available > item.total_quantity|add:"0" %}
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                                <small class="text-muted">High availability</small>
+                                            {% elif item.quantity_available > 0 %}
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                                <small class="text-muted">Low availability</small>
+                                            {% else %}
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: 5%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"></div>
+                                                <small class="text-muted">Not available</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    {% if item.is_available %}
+                                        <button class="btn btn-primary w-100 rent-btn" 
+                                            data-equipment-id="{{ item.pk }}" 
+                                            data-equipment-name="{{ item.name|escapejs }}" 
+                                            data-rent-per-day="{{ item.rent_per_day }}" 
+                                            data-max-quantity="{{ item.quantity_available }}">
+                                            <i class="fas fa-shopping-cart me-2"></i>Rent Now
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-secondary w-100" disabled>
+                                            <i class="fas fa-times me-1"></i>On Rent
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5" data-aos="fade-up">
+                        <div class="empty-state">
+                            <i class="fas fa-tools fa-5x text-muted mb-4"></i>
+                            <h5>No Equipment Available</h5>
+                            <p class="text-muted">No farming equipment is available for rent at the moment. Please check back later.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order History Section -->
+<div id="orders-section" class="row">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2" style="color: var(--primary-green);"></i>Order History
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Equipment</th>
+                                    <th>Quantity</th>
+                                    <th>Rental Period</th>
+                                    <th>Total Cost</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-light text-dark">#{{ order.id }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if order.equipment.photo %}
+                                                <img src="{{ order.equipment.photo.url }}" alt="{{ order.equipment.name }}" class="me-2" style="width: 35px; height: 35px; object-fit: cover; border-radius: 5px;">
+                                            {% else %}
+                                                <img src="https://via.placeholder.com/35x35/ffc107/ffffff?text=E" alt="Equipment" class="me-2" style="width: 35px; height: 35px; object-fit: cover; border-radius: 5px;">
+                                            {% endif %}
+                                            <div>
+                                                <strong>{{ order.equipment.name|truncatechars:25 }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ order.equipment.description|truncatewords:3 }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ order.quantity }} unit(s)</span>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            <i class="fas fa-calendar-alt me-1"></i>
+                                            {{ order.start_date|date:"M d" }} - {{ order.end_date|date:"M d, Y" }}
+                                            <br>
+                                            <span class="text-muted">{{ order.total_days }} days</span>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">₹{{ order.total_cost }}</strong>
+                                    </td>
+                                    <td>
+                                        {% if order.status == 'confirmed' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>{{ order.get_status_display }}
+                                            </span>
+                                        {% elif order.status == 'pending' %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>{{ order.get_status_display }}
+                                            </span>
+                                        {% elif order.status == 'cancelled' %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times-circle me-1"></i>{{ order.get_status_display }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ order.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if order.payment_status == 'paid' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Paid
+                                            </span>
+                                        {% elif order.payment_status == 'pending' %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </span>
+                                        {% elif order.payment_status == 'failed' %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times me-1"></i>Failed
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ order.payment_status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                        <h6>No Orders Found</h6>
+                        <p class="text-muted mb-0">You haven't placed any equipment rental orders yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Equipment and Order History Cards -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card dashboard-card equipment-nav-card" onclick="window.location.href='#equipment-section'" style="cursor: pointer;">
+            <div class="card-body text-center">
+                <i class="fas fa-tools fa-3x text-primary mb-3"></i>
+                <h5>Equipment List</h5>
+                <p class="text-muted">Browse and rent available farming equipment</p>
+                <div class="equipment-count">
+                    <span class="badge bg-success">{{ equipment|length }} Available</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card dashboard-card equipment-nav-card" onclick="window.location.href='#orders-section'" style="cursor: pointer;">
+            <div class="card-body text-center">
+                <i class="fas fa-history fa-3x text-info mb-3"></i>
+                <h5>Order History</h5>
+                <p class="text-muted">View your equipment rental history</p>
+                <div class="equipment-count">
+                    <span class="badge bg-warning">My Orders</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Back Button -->
+<div class="row mb-4">
+    <div class="col-12">
+        <a href="{% url 'farmer_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Rent Equipment Modal -->
+<div class="modal fade" id="rentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rent Equipment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'rent_equipment' %}" id="rentForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="equipment_id" id="equipment_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Equipment</label>
+                        <input type="text" class="form-control" id="equipment_name" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Rent per Day</label>
+                        <input type="text" class="form-control" id="rent_per_day" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity *</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+                        <div class="form-text">Number of equipment units you want to rent</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label">Start Date *</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="end_date" class="form-label">End Date *</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Total Cost</label>
+                        <input type="text" class="form-control" id="total_cost" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Payment Method</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" checked>
+                            <label class="form-check-label" for="cod">
+                                Cash on Delivery
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="online" value="online">
+                            <label class="form-check-label" for="online">
+                                <i class="fas fa-credit-card me-1"></i>Online Payment (Razorpay)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success" id="finalRentBtn">
+                        <i class="fas fa-credit-card me-1"></i>Final Rent
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners to rent buttons
+    const rentButtons = document.querySelectorAll('.rent-btn');
+    rentButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const equipmentId = this.dataset.equipmentId;
+            const equipmentName = this.dataset.equipmentName;
+            const rentPerDay = this.dataset.rentPerDay;
+            const maxQuantity = this.dataset.maxQuantity;
+            
+            showRentForm(equipmentId, equipmentName, rentPerDay, maxQuantity);
+        });
+    });
+});
+
+function showRentForm(equipmentId, equipmentName, rentPerDay, maxQuantity) {
+    document.getElementById('equipment_id').value = equipmentId;
+    document.getElementById('equipment_name').value = equipmentName;
+    document.getElementById('rent_per_day').value = rentPerDay; // Store as number, not formatted string
+    document.getElementById('quantity').max = maxQuantity;
+    document.getElementById('quantity').value = 1;
+    
+    // Clear dates and total cost
+    document.getElementById('start_date').value = '';
+    document.getElementById('end_date').value = '';
+    document.getElementById('total_cost').value = '';
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start_date').min = today;
+    document.getElementById('end_date').min = today;
+    
+    // Add event listener to update end date minimum when start date changes
+    document.getElementById('start_date').addEventListener('change', function() {
+        document.getElementById('end_date').min = this.value;
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('rentModal'));
+    modal.show();
+}
+
+// Calculate total cost when dates change
+document.addEventListener('DOMContentLoaded', function() {
+    const startDate = document.getElementById('start_date');
+    const endDate = document.getElementById('end_date');
+    const quantityInput = document.getElementById('quantity');
+    const rentPerDayInput = document.getElementById('rent_per_day');
+    const totalCostInput = document.getElementById('total_cost');
+    
+    function calculateTotal() {
+        if (startDate.value && endDate.value && quantityInput.value) {
+            const start = new Date(startDate.value);
+            const end = new Date(endDate.value);
+            const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            const quantity = parseInt(quantityInput.value);
+            
+            if (days > 0 && quantity > 0) {
+                const rentPerDay = parseFloat(rentPerDayInput.value);
+                const totalCost = days * rentPerDay * quantity;
+                totalCostInput.value = '₹' + totalCost.toFixed(2) + ' (' + days + ' days × ' + quantity + ' units)';
+            } else {
+                totalCostInput.value = '';
+            }
+        }
+    }
+    
+    startDate.addEventListener('change', calculateTotal);
+    endDate.addEventListener('change', calculateTotal);
+    quantityInput.addEventListener('change', calculateTotal);
+});
+</script>
+
+<style>
+.filter-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--primary-green);
+}
+
+.equipment-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    min-height: 350px;
+    max-height: 400px;
+}
+
+.equipment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.equipment-image-container {
+    position: relative;
+    overflow: hidden;
+    height: 180px;
+}
+
+.equipment-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.equipment-card:hover .equipment-image {
+    transform: scale(1.05);
+}
+
+.equipment-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+}
+
+.equipment-badge.available {
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+}
+
+.equipment-badge.unavailable {
+    background: rgba(255, 152, 0, 0.9);
+    color: white;
+}
+
+.equipment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.equipment-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark-green);
+    margin-bottom: 0;
+    line-height: 1.2;
+}
+
+.equipment-rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.availability-indicator {
+    margin-top: 10px;
+}
+
+.availability-indicator .progress {
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.empty-state {
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    border: 2px dashed #dee2e6;
+}
+
+.empty-state i {
+    color: #adb5bd;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .equipment-card {
+        margin-bottom: 20px;
+    }
+    
+    .filter-card .row {
+        gap: 15px;
+    }
+    
+    .filter-card .col-md-3 {
+        margin-bottom: 15px;
+    }
+}
+
+/* Loading animation */
+
+
+.equipment-card {
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: 0.3s;
+    overflow: hidden;
+    height: 100%; /* KEY FIX */
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced button styles */
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary-green), var(--light-green));
+    border: none;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, var(--dark-green), var(--primary-green));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(46, 125, 50, 0.3);
+}
+
+/* Form enhancements */
+.form-control:focus {
+    border-color: var(--light-green);
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+}
+
+.form-select:focus {
+    border-color: var(--light-green);
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+}
+
+/* Modal enhancements */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    background: linear-gradient(45deg, var(--primary-green), var(--light-green));
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+.modal-header .btn-close {
+    color: white;
+    opacity: 0.8;
+}
+
+.modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+/* Equipment Navigation Cards */
+.equipment-nav-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e9ecef;
+    border-radius: 15px;
+    padding: 2.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+}
+
+.equipment-nav-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-color: var(--primary-green);
+}
+
+.equipment-nav-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-green), var(--accent-orange));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.equipment-nav-card:hover::before {
+    transform: scaleX(1);
+}
+
+.equipment-nav-card i {
+    transition: all 0.3s ease;
+}
+
+.equipment-nav-card:hover i {
+    transform: scale(1.1);
+}
+
+.equipment-count {
+    margin-top: 1rem;
+}
+
+/* Section Anchors */
+#equipment-section, #orders-section {
+    scroll-margin-top: 100px;
+}
+</style>
+{% endblock %}

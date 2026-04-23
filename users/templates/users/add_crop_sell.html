@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Crop to Sell - BHUMIPUTRA{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section mb-4" data-aos="fade-down">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="hero-content">
+                <h1 class="display-5 fw-bold text-white mb-3">
+                    <i class="fas fa-seedling me-3"></i>Add Crop to Sell
+                </h1>
+                <p class="lead text-white-50 mb-0">List your crops for sale and connect with buyers directly.</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'farmer_dashboard' %}" class="btn btn-light">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Add Crop Form -->
+<div class="row">
+    <div class="col-lg-8 mx-auto" data-aos="fade-up">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-plus-circle me-2" style="color: var(--primary-green);"></i>Crop Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="addCropForm">
+                    {% csrf_token %}
+                    
+                    <!-- Crop Name -->
+                    <div class="mb-4">
+                        <label for="crop_name" class="form-label">
+                            <i class="fas fa-tag me-2"></i>Crop Name
+                        </label>
+                        <input type="text" class="form-control" id="crop_name" name="crop_name" required>
+                    </div>
+
+                    <!-- Crop Grade -->
+                    <div class="mb-4">
+                        <label for="crop_grade" class="form-label">
+                            <i class="fas fa-star me-2"></i>Crop Grade
+                        </label>
+                        <select class="form-select" id="crop_grade" name="crop_grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="A">Grade A - Premium Quality</option>
+                            <option value="B">Grade B - Good Quality</option>
+                            <option value="C">Grade C - Standard Quality</option>
+                            <option value="D">Grade D - Basic Quality</option>
+                        </select>
+                    </div>
+
+                    <!-- Crop Photo -->
+                    <div class="mb-4">
+                        <label for="crop_photo" class="form-label">
+                            <i class="fas fa-camera me-2"></i>Crop Photo
+                        </label>
+                        <input type="file" class="form-control" id="crop_photo" name="crop_photo" accept="image/*" required>
+                        <div class="form-text">Upload a clear photo of your crop (JPG, PNG, max 5MB)</div>
+                        <div id="imagePreview" class="mt-3"></div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="mb-4">
+                        <label for="crop_price" class="form-label">
+                            <i class="fas fa-rupee-sign me-2"></i>Price per Unit
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" class="form-control" id="crop_price" name="crop_price" min="0" step="0.01" required>
+                            <span class="input-group-text">per kg</span>
+                        </div>
+                    </div>
+
+                    <!-- Quantity Available -->
+                    <div class="mb-4">
+                        <label for="crop_quantity" class="form-label">
+                            <i class="fas fa-weight me-2"></i>Quantity Available
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="crop_quantity" name="crop_quantity" min="1" required>
+                            <span class="input-group-text">kg</span>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label for="crop_description" class="form-label">
+                            <i class="fas fa-align-left me-2"></i>Description
+                        </label>
+                        <textarea class="form-control" id="crop_description" name="crop_description" rows="4" 
+                                  placeholder="Describe your crop quality, harvesting method, and other details..."></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'farmer_dashboard' %}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check me-2"></i>Add Crop for Sale
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Image preview functionality
+document.getElementById('crop_photo').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <div class="mt-3">
+                    <img src="${e.target.result}" class="img-thumbnail" style="max-height: 200px;" alt="Crop preview">
+                    <p class="mt-2 text-muted small">Selected: ${file.name}</p>
+                </div>
+            `;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        preview.innerHTML = '';
+    }
+});
+
+// Form validation
+document.getElementById('addCropForm').addEventListener('submit', function(e) {
+    const price = parseFloat(document.getElementById('crop_price').value);
+    const quantity = parseFloat(document.getElementById('crop_quantity').value);
+    
+    if (price <= 0) {
+        e.preventDefault();
+        alert('Please enter a valid price greater than 0');
+        return;
+    }
+    
+    if (quantity <= 0) {
+        e.preventDefault();
+        alert('Please enter a valid quantity greater than 0');
+        return;
+    }
+});
+
+// Auto-format price input
+document.getElementById('crop_price').addEventListener('input', function(e) {
+    if (e.target.value < 0) {
+        e.target.value = 0;
+    }
+});
+
+document.getElementById('crop_quantity').addEventListener('input', function(e) {
+    if (e.target.value < 1) {
+        e.target.value = 1;
+    }
+});
+</script>
+
+<style>
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+}
+
+.input-group-text {
+    background-color: var(--light-green);
+    border-color: var(--primary-green);
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(45deg, var(--primary-green), var(--light-green));
+    border: none;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background: linear-gradient(45deg, var(--dark-green), var(--primary-green));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(46, 125, 50, 0.3);
+}
+
+.btn-secondary {
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+}
+
+.img-thumbnail {
+    border-radius: 10px;
+    border: 2px solid var(--primary-green);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark-green);
+}
+
+.form-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Farm Details - BHUMIPUTRA{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-tractor me-2"></i>Farm Details</h1>
+    <a href="{% url 'farmer_dashboard' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-tractor me-2"></i>Farm Information</h5>
+            </div>
+            <div class="card-body">
+                {% if farm %}
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">Farm Location *</label>
+                                <input type="text" class="form-control" id="location" name="location" value="{{ farm.location }}" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="size" class="form-label">Farm Size (acres) *</label>
+                                <input type="number" class="form-control" id="size" name="size" step="0.01" min="0" value="{{ farm.size }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="crop" class="form-label">Current Crop *</label>
+                                <input type="text" class="form-control" id="crop" name="crop" value="{{ farm.crop }}" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="soil_type" class="form-label">Soil Type *</label>
+                                <input type="text" class="form-control" id="soil_type" name="soil_type" value="{{ farm.soil_type }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="water_source" class="form-label">Water Source *</label>
+                                <input type="text" class="form-control" id="water_source" name="water_source" value="{{ farm.water_source }}" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="farm_status" class="form-label">Farm Status *</label>
+                                <select class="form-select" id="farm_status" name="farm_status" required>
+                                    <option value="Active" {% if farm.farm_status == 'Active' %}selected{% endif %}>Active</option>
+                                    <option value="Inactive" {% if farm.farm_status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                                    <option value="Maintenance" {% if farm.farm_status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update Farm Details
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">Farm Location *</label>
+                                <input type="text" class="form-control" id="location" name="location" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="size" class="form-label">Farm Size (acres) *</label>
+                                <input type="number" class="form-control" id="size" name="size" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="crop" class="form-label">Current Crop *</label>
+                                <input type="text" class="form-control" id="crop" name="crop" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="soil_type" class="form-label">Soil Type *</label>
+                                <input type="text" class="form-control" id="soil_type" name="soil_type" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="water_source" class="form-label">Water Source *</label>
+                                <input type="text" class="form-control" id="water_source" name="water_source" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="farm_status" class="form-label">Farm Status *</label>
+                                <select class="form-select" id="farm_status" name="farm_status" required>
+                                    <option value="Active" selected>Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Maintenance">Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Farm Details
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle me-2"></i>Farm Tips</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Keep soil pH between 6.0-7.0
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Regular soil testing recommended
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Maintain proper irrigation schedule
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Use organic fertilizers
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

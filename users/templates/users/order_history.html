@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Order History - BHUMIPUTRA{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-history me-2"></i>Order History</h1>
+    <a href="{% if user.role == 'farmer' %}{% url 'farmer_dashboard' %}{% else %}{% url 'buyer_dashboard' %}{% endif %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-list me-2"></i>Your Orders</h5>
+    </div>
+    <div class="card-body">
+        {% if orders %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Equipment</th>
+                            <th>Quantity</th>
+                            <th>Rental Period</th>
+                            <th>Total Cost</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Order Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>
+                                <strong>#ORD{{ order.id|stringformat:"05d" }}</strong>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if order.equipment.photo %}
+                                        <img src="{{ order.equipment.photo.url }}" alt="{{ order.equipment.name }}" class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=E" alt="Equipment" class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ order.equipment.name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ order.equipment.description|truncatewords:5 }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ order.quantity }} unit(s)</span>
+                            </td>
+                            <td>
+                                <small>{{ order.start_date|date:"d M Y" }}</small>
+                                <br>
+                                <small class="text-muted">to {{ order.end_date|date:"d M Y" }}</small>
+                                <br>
+                                <small class="text-muted">{{ order.total_days }} days</small>
+                            </td>
+                            <td>
+                                <strong>₹{{ order.total_cost }}</strong>
+                            </td>
+                            <td>
+                                {% if order.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif order.status == 'confirmed' %}
+                                    <span class="badge bg-info">Confirmed</span>
+                                {% elif order.status == 'completed' %}
+                                    <span class="badge bg-primary">Completed</span>
+                                {% elif order.status == 'cancelled' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if order.payment_status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif order.payment_status == 'paid' %}
+                                    <span class="badge bg-success">Paid</span>
+                                {% elif order.payment_status == 'failed' %}
+                                    <span class="badge bg-danger">Failed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ order.created_at|date:"d M Y" }}</small>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" onclick="viewOrderDetails({{ order.id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                {% if order.status == 'pending' %}
+                                <button class="btn btn-sm btn-outline-success" onclick="retryPayment({{ order.id }})">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="cancelOrder({{ order.id }})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                <h5>No Orders Found</h5>
+                <p class="text-muted">You haven't placed any orders yet.</p>
+                <a href="{% url 'equipment_list' %}" class="btn btn-primary">
+                    <i class="fas fa-shopping-cart me-2"></i>Browse Equipment
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal fade" id="orderModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Order Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="orderModalBody">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewOrderDetails(orderId) {
+    // This would typically fetch order details via AJAX
+    const modal = new bootstrap.Modal(document.getElementById('orderModal'));
+    document.getElementById('orderModalBody').innerHTML = `
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p class="mt-2">Loading order details...</p>
+        </div>
+    `;
+    modal.show();
+    
+    // Simulate loading (in real app, this would be an AJAX call)
+    setTimeout(() => {
+        document.getElementById('orderModalBody').innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Order Information</h6>
+                    <p><strong>Order ID:</strong> #ORD${orderId.toString().padStart(5, '0')}</p>
+                    <p><strong>Order Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>Status:</strong> <span class="badge bg-info">Active</span></p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Rental Period</h6>
+                    <p><strong>Start Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>End Date:</strong> ${new Date(Date.now() + 7*24*60*60*1000).toLocaleDateString()}</p>
+                    <p><strong>Duration:</strong> 7 days</p>
+                </div>
+            </div>
+        `;
+    }, 1000);
+}
+
+function retryPayment(orderId) {
+    window.location.href = `/payment/razorpay/${orderId}/`;
+}
+
+function cancelOrder(orderId) {
+    if (confirm('Are you sure you want to cancel this order?')) {
+        // This would typically make an AJAX call to cancel the order
+        window.location.reload();
+    }
+}
+</script>
+{% endblock %}

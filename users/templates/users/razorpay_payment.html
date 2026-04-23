@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - Razorpay{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-credit-card me-2"></i>Complete Payment</h1>
+    <a href="{% url 'equipment_list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Equipment
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Order Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6>Equipment Details</h6>
+                        <p class="mb-1"><strong>{{ order.equipment.name }}</strong></p>
+                        <p class="text-muted mb-1">{{ order.equipment.description|truncatewords:15 }}</p>
+                        <p class="mb-0"><small class="text-info">Quantity: {{ order.quantity }} unit(s)</small></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Rental Period</h6>
+                        <p class="mb-1"><strong>From:</strong> {{ order.start_date|date:"d M Y" }}</p>
+                        <p class="mb-1"><strong>To:</strong> {{ order.end_date|date:"d M Y" }}</p>
+                        <p class="mb-0"><small class="text-info">Duration: {{ order.total_days }} days</small></p>
+                    </div>
+                </div>
+                
+                <div class="border-top pt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Total Amount</h5>
+                        <h4 class="mb-0 text-success">₹{{ order.total_cost }}</h4>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Please complete your payment using Razorpay secure payment gateway.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-body text-center">
+                <button id="rzp-button" class="btn btn-success btn-lg">
+                    <i class="fas fa-lock me-2"></i>Pay with Razorpay
+                </button>
+                <p class="text-muted mt-3">
+                    <i class="fas fa-shield-alt me-1"></i>
+                    Secure payment powered by Razorpay
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('rzp-button').onclick = function(e) {
+    e.preventDefault();
+    
+    var options = {
+        "key": "{{ razorpay_key_id }}",
+        "amount": "{{ razorpay_order.amount }}",
+        "currency": "INR",
+        "name": "BHUMIPUTRA Equipment Rental",
+        "description": "Payment for {{ order.equipment.name }}",
+        "image": "{% static 'images/logo.png' %}",
+        "order_id": "{{ razorpay_order.id }}",
+        "handler": function (response){
+            // Show loading state
+            document.getElementById('rzp-button').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing Payment...';
+            document.getElementById('rzp-button').disabled = true;
+            
+            // Submit the form to payment success URL
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ callback_url }}';
+            
+            // Add Razorpay response
+            var paymentId = document.createElement('input');
+            paymentId.type = 'hidden';
+            paymentId.name = 'razorpay_payment_id';
+            paymentId.value = response.razorpay_payment_id;
+            form.appendChild(paymentId);
+            
+            var orderId = document.createElement('input');
+            orderId.type = 'hidden';
+            orderId.name = 'razorpay_order_id';
+            orderId.value = response.razorpay_order_id;
+            form.appendChild(orderId);
+            
+            var signature = document.createElement('input');
+            signature.type = 'hidden';
+            signature.name = 'razorpay_signature';
+            signature.value = response.razorpay_signature;
+            form.appendChild(signature);
+            
+            document.body.appendChild(form);
+            form.submit();
+        },
+        "prefill": {
+            "name": "{{ user.get_full_name|default:user.username }}",
+            "email": "{{ user.email|default:'' }}",
+            "contact": "{{ user.phone|default:'' }}"
+        },
+        "notes": {
+            "equipment_order_id": "{{ order.id }}",
+            "user_id": "{{ user.id }}",
+            "equipment_name": "{{ order.equipment.name }}"
+        },
+        "theme": {
+            "color": "#28a745"
+        },
+        "modal": {
+            "ondismiss": function(){
+                window.location.href = "{% url 'payment_failed' %}";
+            }
+        }
+    };
+    
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+};
+</script>
+
+<style>
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+#rzp-button {
+    min-width: 200px;
+}
+
+.border-top {
+    border-color: #dee2e6 !important;
+}
+</style>
+{% endblock %}

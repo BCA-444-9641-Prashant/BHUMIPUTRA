@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Equipment - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-tools me-2"></i>Add New Equipment</h1>
+    <a href="{% url 'adminpanel:equipment_list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Equipment
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-tools me-2"></i>Equipment Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Equipment Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <div class="invalid-feedback">
+                                Please provide an equipment name.
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="rent_per_day" class="form-label">Rent per Day (₹) *</label>
+                            <input type="number" class="form-control" id="rent_per_day" name="rent_per_day" step="0.01" min="0" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid rent amount.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description *</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                        <div class="invalid-feedback">
+                            Please provide a description.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="photo" class="form-label">Equipment Photo (Optional)</label>
+                        <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+                        <div class="form-text">Upload an image of the equipment (JPG, PNG, GIF)</div>
+                        <img id="image-preview" class="mt-2" style="max-width: 200px; display: none;">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="total_quantity" class="form-label">Total Quantity *</label>
+                            <input type="number" class="form-control" id="total_quantity" name="total_quantity" min="1" value="1" required>
+                            <div class="form-text">Total number of equipment units available</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="quantity_available" class="form-label">Available Quantity *</label>
+                            <input type="number" class="form-control" id="quantity_available" name="quantity_available" min="0" value="1" required>
+                            <div class="form-text">Number of units currently available for rent</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'adminpanel:equipment_list' %}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Add Equipment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

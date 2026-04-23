@@ -1,0 +1,1663 @@
+{% extends 'base.html' %}
+
+{% block title %}Farmer Dashboard - BHUMIPUTRA{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-tractor fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">{{ farm.location|default:"Not Registered" }}</h3>
+                <p class="stats-label">
+                    {% if farm %}{{ farm.size }} acres{% else %}Register your farm{% endif %}
+                </p>
+                <a href="{% url 'farm_details' %}" class="btn btn-sm btn-light mt-2">
+                    {% if farm %}Update Details{% else %}Add Farm{% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="stats-icon">
+                <i class="fas fa-bullhorn fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">{{ total_schemes }}</h3>
+                <p class="stats-label">Government Schemes</p>
+                <a href="{% url 'scheme_view' %}" class="btn btn-sm btn-light mt-2">
+                    View Schemes <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="stats-icon">
+                <i class="fas fa-seedling fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">{{ total_crops }}</h3>
+                <p class="stats-label">Crop Varieties</p>
+                <a href="{% url 'crop_cards' %}" class="btn btn-sm btn-light mt-2">
+                    Browse Crops <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+        <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="stats-icon">
+                <i class="fas fa-tools fa-2x"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-number">{{ total_equipment }}</h3>
+                <p class="stats-label">Equipment Available</p>
+                <a href="{% url 'equipment_list' %}" class="btn btn-sm btn-light mt-2">
+                    Rent Equipment <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Chatbot Section -->
+<div class="row mb-4" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-robot me-2" style="color: var(--primary-green);"></i>AI Farming Assistant
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="fas fa-comments fa-3x text-info"></i>
+                            </div>
+                            <div class="action-content">
+                                <h5 class="action-title">Chat with AI Assistant</h5>
+                                <p class="action-description">Get instant help with farming queries, crop advice, weather information, and best practices from our AI assistant.</p>
+                                <button class="btn btn-info" onclick="openSimpleAIChat()" type="button">
+                                    <i class="fas fa-comments me-2"></i>Start Chat
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sell Crop Section -->
+<div class="row mb-4" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-shopping-cart me-2" style="color: var(--accent-orange);"></i>Sell Your Crops
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="fas fa-plus-circle fa-3x text-success"></i>
+                            </div>
+                            <div class="action-content">
+                                <h5 class="action-title">Add Crop to Sell</h5>
+                                <p class="action-description">List your crops for sale and reach buyers directly</p>
+                                <a href="{% url 'add_crop_sell' %}" class="btn btn-success">
+                                    <i class="fas fa-plus me-2"></i>Add Crop
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3" data-aos="fade-up" data-aos-delay="200">
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="fas fa-list-alt fa-3x text-info"></i>
+                            </div>
+                            <div class="action-content">
+                                <h5 class="action-title">See All Crops</h5>
+                                <p class="action-description">Manage your crop listings and track sales</p>
+                                <a href="{% url 'manage_crops' %}" class="btn btn-info">
+                                    <i class="fas fa-eye me-2"></i>View Crops
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Course Section -->
+<div class="row mb-4">
+    <div class="col-xl-8 mb-4" data-aos="fade-right">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-gradient" style="background: linear-gradient(45deg, var(--primary-green), var(--light-green));">
+                <h5 class="mb-0 text-white">
+                    <i class="fas fa-graduation-cap me-2"></i>Farming Courses & Training
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Course Stats Overview -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="course-stat-card text-center">
+                            <div class="course-stat-icon">
+                                <i class="fas fa-book-open fa-2x text-primary"></i>
+                            </div>
+                            <h4 class="course-stat-number">{{ total_courses }}</h4>
+                            <p class="course-stat-label">Total Courses</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="course-stat-card text-center">
+                            <div class="course-stat-icon">
+                                <i class="fas fa-trophy fa-2x text-warning"></i>
+                            </div>
+                            <h4 class="course-stat-number">{{ completed_courses|default:0 }}</h4>
+                            <p class="course-stat-label">Completed</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="course-stat-card text-center">
+                            <div class="course-stat-icon">
+                                <i class="fas fa-clock fa-2x text-info"></i>
+                            </div>
+                            <h4 class="course-stat-number">{{ ongoing_courses|default:0 }}</h4>
+                            <p class="course-stat-label">In Progress</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Courses -->
+                <div class="featured-courses-section">
+                    <h6 class="section-subtitle mb-3">
+                        <i class="fas fa-star me-2 text-warning"></i>Featured Courses
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="course-preview-card">
+                                <div class="course-preview-header">
+                                    <div class="course-preview-icon">
+                                        <i class="fas fa-seedling text-success"></i>
+                                    </div>
+                                    <div class="course-preview-badge">Popular</div>
+                                </div>
+                                <div class="course-preview-body">
+                                    <h6 class="course-preview-title">Organic Farming Basics</h6>
+                                    <p class="course-preview-desc">Learn sustainable farming practices</p>
+                                    <div class="course-preview-meta">
+                                        <span class="course-duration"><i class="fas fa-clock me-1"></i>4 weeks</span>
+                                        <span class="course-level"><i class="fas fa-signal me-1"></i>Beginner</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="course-preview-card">
+                                <div class="course-preview-header">
+                                    <div class="course-preview-icon">
+                                        <i class="fas fa-tractor text-primary"></i>
+                                    </div>
+                                    <div class="course-preview-badge">New</div>
+                                </div>
+                                <div class="course-preview-body">
+                                    <h6 class="course-preview-title">Modern Equipment Usage</h6>
+                                    <p class="course-preview-desc">Master farming machinery operations</p>
+                                    <div class="course-preview-meta">
+                                        <span class="course-duration"><i class="fas fa-clock me-1"></i>6 weeks</span>
+                                        <span class="course-level"><i class="fas fa-signal me-1"></i>Intermediate</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="course-actions">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{% url 'course_list' %}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-search me-2"></i>Browse All Courses
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'my_courses' %}" class="btn btn-success w-100 mb-2">
+                                <i class="fas fa-book-open me-2"></i>My Learning
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4 mb-4" data-aos="fade-left">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-gradient" style="background: linear-gradient(45deg, var(--accent-orange), var(--warm-yellow));">
+                <h5 class="mb-0 text-white">
+                    <i class="fas fa-chart-line me-2"></i>Quick Stats
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mini-stats">
+                    <div class="mini-stat-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">Active Schemes</h6>
+                                <small class="text-muted">Available now</small>
+                            </div>
+                            <div class="stat-badge bg-success">{{ total_schemes }}</div>
+                        </div>
+                    </div>
+                    <div class="mini-stat-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">Crop Types</h6>
+                                <small class="text-muted">Varieties</small>
+                            </div>
+                            <div class="stat-badge bg-info">{{ total_crops }}</div>
+                        </div>
+                    </div>
+                    <div class="mini-stat-item mb-3">
+                        <a href="{% url 'equipment_list' %}" class="equipment-mini-card text-decoration-none">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Equipment</h6>
+                                    <small class="text-muted">Available</small>
+                                </div>
+                                <div class="stat-badge bg-warning">{{ total_equipment }}</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="mini-stat-item mb-3">
+                        <a href="{% url 'order_history' %}" class="equipment-mini-card text-decoration-none">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">My Orders</h6>
+                                    <small class="text-muted">Rental History</small>
+                                </div>
+                                <div class="stat-badge bg-info">
+                                    <i class="fas fa-history"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="mini-stat-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">Courses</h6>
+                                <small class="text-muted">Training</small>
+                            </div>
+                            <div class="stat-badge bg-primary">{{ total_courses }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Farming Tips Section -->
+<div class="row mb-4" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2" style="color: var(--warm-yellow);"></i>Farming Tips & Best Practices
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="tip-card weather-card" id="weatherCard">
+                            <div class="tip-icon">
+                                <i class="fas fa-cloud-sun fa-2x text-info" id="weatherIcon"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h6>Weather Advisory</h6>
+                                <div class="weather-info">
+                                    <div class="weather-main">
+                                        <span class="temperature" id="temperature">--°C</span>
+                                        <span class="weather-desc" id="weatherDesc">Loading...</span>
+                                    </div>
+                                    <div class="weather-details">
+                                        <div class="weather-item">
+                                            <i class="fas fa-tint text-blue"></i>
+                                            <span id="humidity">--%</span>
+                                        </div>
+                                        <div class="weather-item">
+                                            <i class="fas fa-wind text-gray"></i>
+                                            <span id="windSpeed">-- km/h</span>
+                                        </div>
+                                        <div class="weather-item">
+                                            <i class="fas fa-map-marker-alt text-red"></i>
+                                            <span id="location">Detecting...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="weather-advice" id="weatherAdvice">
+                                    <p class="text-muted small">Getting weather data...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="200">
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <i class="fas fa-seedling fa-2x text-success"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h6>Crop Rotation</h6>
+                                <p class="text-muted small">Practice crop rotation to maintain soil fertility and reduce pests naturally.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="300">
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <i class="fas fa-tint fa-2x text-warning"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h6>Water Management</h6>
+                                <p class="text-muted small">Use efficient irrigation methods to conserve water resources and reduce costs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Latest Updates Section -->
+<div class="row" data-aos="fade-up">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header section-title">
+                <h5 class="mb-0">
+                    <i class="fas fa-bell me-2" style="color: var(--accent-orange);"></i>Latest Updates
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="updates-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot bg-success"></div>
+                        <div class="timeline-content">
+                            <h6>New Government Scheme</h6>
+                            <p class="mb-0">Pradhan Mantri Krishi Sinchai Yojana launched with increased subsidy for drip irrigation systems.</p>
+                            <small class="text-muted">2 days ago</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot bg-info"></div>
+                        <div class="timeline-content">
+                            <h6>Weather Alert</h6>
+                            <p class="mb-0">Heavy rainfall expected in the region. Take necessary precautions for your crops.</p>
+                            <small class="text-muted">1 day ago</small>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item" data-aos="fade-right" data-aos-delay="200">
+                        <div class="timeline-dot bg-warning"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">Equipment Sale</h6>
+                                    <p class="text-muted mb-2">Special discount on farming equipment this month. Up to 30% off on selected items.</p>
+                                </div>
+                                <small class="text-muted">1 week ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.user-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.profile-avatar {
+    animation: pulse 2s infinite;
+}
+
+.tip-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--primary-green);
+}
+
+.tip-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.tip-icon {
+    margin-bottom: 15px;
+}
+
+.mini-stat-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.mini-stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-badge {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.updates-timeline {
+    position: relative;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 40px;
+    margin-bottom: 30px;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    border-left: 3px solid var(--primary-green);
+}
+
+.course-progress .progress {
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+/* Enhanced Course Card Styles */
+.course-stat-card {
+    padding: 20px 15px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.course-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-color: var(--primary-green);
+}
+
+.course-stat-icon {
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 50%;
+    background: rgba(76, 175, 80, 0.1);
+    display: inline-block;
+    width: 70px;
+    height: 70px;
+    line-height: 40px;
+}
+
+.course-stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin-bottom: 5px;
+}
+
+.course-stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 0;
+    font-weight: 500;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #495057;
+    border-left: 3px solid var(--primary-green);
+    padding-left: 10px;
+}
+
+.course-preview-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.course-preview-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border-color: var(--primary-green);
+}
+
+.course-preview-header {
+    position: relative;
+    padding: 15px;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-bottom: 1px solid #e9ecef;
+}
+
+.course-preview-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(76, 175, 80, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.course-preview-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--primary-green);
+    color: white;
+}
+
+.course-preview-badge.badge-new {
+    background: var(--accent-orange);
+}
+
+.course-preview-body {
+    padding: 15px;
+}
+
+.course-preview-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.course-preview-desc {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.course-preview-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.8rem;
+    color: #868e96;
+}
+
+.course-duration, .course-level {
+    display: flex;
+    align-items: center;
+}
+
+.course-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.course-actions .btn {
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.course-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+    .course-stat-card {
+        padding: 15px 10px;
+    }
+    
+    .course-stat-number {
+        font-size: 2rem;
+    }
+    
+    .course-preview-card {
+        margin-bottom: 15px;
+    }
+    
+    .course-preview-meta {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Enhanced Weather Card Styles */
+.weather-card {
+    background: linear-gradient(135deg, #e3f2fd, #ffffff);
+    border: 1px solid #90caf9;
+    position: relative;
+    overflow: hidden;
+}
+
+.weather-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #2196f3, #03a9f4, #00bcd4);
+}
+
+.weather-info {
+    margin-bottom: 10px;
+}
+
+.weather-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.temperature {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1976d2;
+}
+
+.weather-desc {
+    font-size: 0.9rem;
+    color: #424242;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.weather-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.weather-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #616161;
+}
+
+.weather-item i {
+    width: 16px;
+    text-align: center;
+}
+
+.weather-advice {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.weather-advice p {
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Weather loading animation */
+.weather-card.loading .weather-info {
+    opacity: 0.6;
+}
+
+.weather-card.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #2196f3;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: weatherSpin 1s linear infinite;
+}
+
+@keyframes weatherSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Weather icon animations */
+#weatherIcon.fa-sun {
+    color: #ffc107 !important;
+    animation: weatherPulse 2s ease-in-out infinite;
+}
+
+#weatherIcon.fa-cloud {
+    color: #90caf9 !important;
+}
+
+#weatherIcon.fa-cloud-rain {
+    color: #2196f3 !important;
+    animation: weatherBounce 1s ease-in-out infinite;
+}
+
+#weatherIcon.fa-cloud-sun {
+    color: #ff9800 !important;
+}
+
+@keyframes weatherPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes weatherBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* Equipment Mini Cards */
+.equipment-mini-card {
+    display: block;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.equipment-mini-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: var(--primary-green);
+}
+
+.equipment-mini-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-green), var(--accent-orange));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.equipment-mini-card:hover::before {
+    transform: scaleX(1);
+}
+
+.equipment-mini-card .stat-badge {
+    transition: all 0.3s ease;
+}
+
+.equipment-mini-card:hover .stat-badge {
+    transform: scale(1.1);
+}
+
+/* Action Cards for Sell Crop Section */
+.action-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    border-color: var(--primary-green);
+}
+
+.action-icon {
+    margin-bottom: 1.5rem;
+    animation: bounce 2s infinite;
+}
+
+.action-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-green);
+    margin-bottom: 0.5rem;
+}
+
+.action-description {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* AI Chatbot Styles */
+.chat-container {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    background: #f8f9fa;
+}
+
+.chatbox {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: white;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.user-message {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 18px;
+    margin-bottom: 12px;
+    margin-left: auto;
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.bot-message {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 18px;
+    margin-bottom: 12px;
+    margin-right: auto;
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.temporary-message {
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.chat-input-container {
+    padding: 20px;
+    background: white;
+}
+
+.chat-input-container .input-group {
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.chat-input-container .form-control {
+    border: none;
+    border-radius: 25px 0 0 25px;
+    padding: 12px 20px;
+}
+
+.chat-input-container .btn {
+    border: none;
+    border-radius: 0 25px 25px 0;
+    padding: 12px 20px;
+}
+
+.video-container {
+    height: 500px;
+    background: linear-gradient(135deg, #4a60a8, #63bad4);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-placeholder {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-placeholder img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.ai-status {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.modal-xl {
+    max-width: 95%;
+}
+
+@media (max-width: 768px) {
+    .modal-xl {
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .chat-container {
+        height: 400px;
+    }
+    
+    .video-container {
+        height: 300px;
+    }
+    
+    .user-message, .bot-message {
+        max-width: 90%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, AI Chatbot script initialized');
+    // Initialize weather data
+    loadWeatherData();
+});
+
+// Weather functionality
+function loadWeatherData() {
+    const weatherCard = document.getElementById('weatherCard');
+    if (!weatherCard) return;
+    
+    // Add loading state
+    weatherCard.classList.add('loading');
+    
+    // Get user's location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                fetchWeatherData(lat, lon);
+            },
+            error => {
+                console.error('Geolocation error:', error);
+                // Fallback to default location (Delhi)
+                fetchWeatherData(28.6139, 77.2090);
+            }
+        );
+    } else {
+        // Fallback to default location
+        fetchWeatherData(28.6139, 77.2090);
+    }
+}
+
+function fetchWeatherData(lat, lon) {
+    const weatherCard = document.getElementById('weatherCard');
+    const apiKey = '8d2b4322e7ce4a5bb943822024041112'; // Free OpenWeatherMap API key
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+    
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            updateWeatherDisplay(data);
+            weatherCard.classList.remove('loading');
+        })
+        .catch(error => {
+            console.error('Weather API error:', error);
+            // Fallback to demo data
+            showFallbackWeather();
+            weatherCard.classList.remove('loading');
+        });
+}
+
+function updateWeatherDisplay(data) {
+    // Update temperature
+    document.getElementById('temperature').textContent = `${Math.round(data.main.temp)}°C`;
+    
+    // Update weather description
+    document.getElementById('weatherDesc').textContent = data.weather[0].description;
+    
+    // Update humidity
+    document.getElementById('humidity').textContent = `${data.main.humidity}%`;
+    
+    // Update wind speed
+    document.getElementById('windSpeed').textContent = `${data.wind.speed} km/h`;
+    
+    // Update location
+    document.getElementById('location').textContent = data.name;
+    
+    // Update weather icon
+    updateWeatherIcon(data.weather[0].main);
+    
+    // Update weather advice
+    updateWeatherAdvice(data);
+}
+
+function updateWeatherIcon(weatherMain) {
+    const iconElement = document.getElementById('weatherIcon');
+    
+    // Remove all weather classes
+    iconElement.className = 'fas fa-2x';
+    
+    switch(weatherMain.toLowerCase()) {
+        case 'clear':
+            iconElement.classList.add('fa-sun');
+            break;
+        case 'clouds':
+            iconElement.classList.add('fa-cloud');
+            break;
+        case 'rain':
+            iconElement.classList.add('fa-cloud-rain');
+            break;
+        case 'drizzle':
+            iconElement.classList.add('fa-cloud-rain');
+            break;
+        case 'thunderstorm':
+            iconElement.classList.add('fa-bolt');
+            break;
+        case 'snow':
+            iconElement.classList.add('fa-snowflake');
+            break;
+        case 'mist':
+        case 'fog':
+            iconElement.classList.add('fa-smog');
+            break;
+        default:
+            iconElement.classList.add('fa-cloud-sun');
+    }
+}
+
+function updateWeatherAdvice(data) {
+    const adviceElement = document.getElementById('weatherAdvice');
+    const temp = data.main.temp;
+    const humidity = data.main.humidity;
+    const weatherMain = data.weather[0].main.toLowerCase();
+    
+    let advice = '';
+    
+    // Temperature-based advice
+    if (temp > 35) {
+        advice = '🌡️ High temperature! Ensure proper irrigation and consider shade nets for sensitive crops.';
+    } else if (temp < 10) {
+        advice = '🥶 Cold weather! Protect sensitive crops and delay planting if necessary.';
+    } else if (temp >= 20 && temp <= 30) {
+        advice = '🌤️ Perfect temperature for most farming activities. Ideal for planting and harvesting.';
+    } else {
+        advice = '🌡️ Moderate temperature. Good for most farming operations.';
+    }
+    
+    // Weather-specific advice
+    if (weatherMain === 'rain') {
+        advice += ' 🌧️ Rain expected. Postpone spraying and consider drainage.';
+    } else if (weatherMain === 'clear') {
+        advice += ' ☀️ Clear skies. Good day for field work and pesticide application.';
+    } else if (weatherMain === 'clouds') {
+        advice += ' ☁️ Cloudy conditions. Good for transplanting and field preparation.';
+    }
+    
+    // Humidity advice
+    if (humidity > 80) {
+        advice += ' 💧 High humidity - watch for fungal diseases.';
+    } else if (humidity < 30) {
+        advice += ' 🏜️ Low humidity - increase irrigation frequency.';
+    }
+    
+    adviceElement.innerHTML = `<p class="text-muted small">${advice}</p>`;
+}
+
+function showFallbackWeather() {
+    // Fallback data for demo purposes
+    document.getElementById('temperature').textContent = '28°C';
+    document.getElementById('weatherDesc').textContent = 'partly cloudy';
+    document.getElementById('humidity').textContent = '65%';
+    document.getElementById('windSpeed').textContent = '12 km/h';
+    document.getElementById('location').textContent = 'Demo Location';
+    document.getElementById('weatherIcon').className = 'fas fa-cloud-sun fa-2x text-info';
+    document.getElementById('weatherAdvice').innerHTML = '<p class="text-muted small">🌤️ Pleasant weather conditions for farming activities.</p>';
+}
+
+function testAndOpenAIChatbot() {
+    console.log('=== AI Chatbot Debug Test ===');
+    
+    // Test 1: Check if modal exists
+    const modalElement = document.getElementById('aiChatbotModal');
+    console.log('1. Modal element test:', modalElement);
+    
+    if (!modalElement) {
+        console.error('Modal not found! Checking all modals...');
+        const allModals = document.querySelectorAll('.modal');
+        console.log('All modals found:', allModals);
+        
+        // Create modal dynamically if not found
+        createDynamicModal();
+        return;
+    }
+    
+    // Test 2: Check modal content
+    console.log('2. Modal HTML (first 200 chars):', modalElement.outerHTML.substring(0, 200));
+    
+    // Test 3: Try to open modal
+    console.log('3. Attempting to open modal...');
+    openAIChatbot();
+}
+
+function createDynamicModal() {
+    console.log('Creating dynamic modal...');
+    
+    const modalHTML = `
+        <div class="modal fade" id="aiChatbotModal" tabindex="-1" data-dynamic="true" style="display: none;">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-gradient" style="background: linear-gradient(45deg, var(--primary-green), var(--light-green));">
+                        <h5 class="modal-title text-white">
+                            <i class="fas fa-robot me-2"></i>BHUMIPUTRA AI Farming Assistant
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" onclick="closeAIChatbot()"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <div class="container-fluid">
+                            <div class="row g-0">
+                                <div class="col-lg-6">
+                                    <div class="chat-container">
+                                        <div id="chatbox" class="chatbox">
+                                            <div class="bot-message">
+                                                <strong>AI Assistant:</strong> Hello! I'm your farming assistant. I can help you with crop advice, weather information, farming best practices, and more. How can I assist you today?
+                                            </div>
+                                        </div>
+                                        <div class="chat-input-container">
+                                            <div class="input-group">
+                                                <input type="text" id="message" class="form-control" placeholder="Ask me anything about farming...">
+                                                <button class="btn btn-success" id="send" type="button" onclick="sendMessage()">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </button>
+                                                <button class="btn btn-info" id="voice" type="button">
+                                                    <i class="fas fa-microphone"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="video-container">
+                                        <div class="video-placeholder">
+                                            <video id="default-video" autoplay muted loop class="ai-video">
+                                                <source src="/static/videos/ai/default.mp4" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                            <video id="speaking-video" class="ai-video" style="display: none;">
+                                                <source src="/static/videos/ai/speaking.mp4" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                            <div class="video-overlay">
+                                                <div class="ai-status">
+                                                    <i class="fas fa-circle text-success me-2"></i>
+                                                    <span>AI Assistant Online</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="w-100">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Powered by Advanced AI Technology
+                                    </small>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <button type="button" class="btn btn-secondary" onclick="closeAIChatbot()">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Add styles
+    const styles = `
+        <style id="ai-chatbot-styles">
+        .chat-container { height: 500px; display: flex; flex-direction: column; background: #f8f9fa; }
+        .chatbox { flex: 1; padding: 20px; overflow-y: auto; background: white; border-bottom: 1px solid #dee2e6; }
+        .user-message { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; margin-left: auto; max-width: 80%; word-wrap: break-word; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .bot-message { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; margin-right: auto; max-width: 80%; word-wrap: break-word; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .chat-input-container { padding: 20px; background: white; }
+        .chat-input-container .input-group { border-radius: 25px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .chat-input-container .form-control { border: none; border-radius: 25px 0 0 25px; padding: 12px 20px; }
+        .chat-input-container .btn { border: none; border-radius: 0 25px 25px 0; padding: 12px 20px; }
+        .video-container { height: 500px; background: linear-gradient(135deg, #4a60a8, #63bad4); position: relative; display: flex; align-items: center; justify-content: center; }
+        .video-placeholder { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        .ai-video { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+        .video-overlay { position: absolute; top: 20px; right: 20px; }
+        .ai-status { background: rgba(255, 255, 255, 0.9); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .modal-xl { max-width: 95%; }
+        </style>
+    `;
+    
+    document.head.insertAdjacentHTML('beforeend', styles);
+    
+    console.log('Dynamic modal created successfully!');
+    
+    // Now try to open it
+    setTimeout(() => {
+        openAIChatbot();
+    }, 100);
+}
+
+function openSimpleAIChat() {
+    console.log('=== Simple AI Chatbot Opening ===');
+    
+    try {
+        // Create a simple, reliable modal
+        const modal = document.createElement('div');
+        modal.id = 'simpleAIChatbot';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        
+        // Create modal content
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        `;
+        
+        modalContent.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #28a745; padding-bottom: 15px;">
+                <h3 style="margin: 0; color: #28a745;">
+                    <i class="fas fa-robot me-2"></i>BHUMIPUTRA AI Assistant
+                </h3>
+                <button onclick="closeSimpleAIChat()" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #28a745; margin-bottom: 10px;">Chat Interface</h4>
+                <div id="simpleChatBox" style="height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; background: #f8f9fa;">
+                    <div style="background: #e3f2fd; color: #004085; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+                        <strong>AI Assistant:</strong> Hello! I'm your farming assistant. How can I help you today?
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="simpleMessageInput" placeholder="Ask me anything about farming..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <button onclick="sendSimpleMessage()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; color: #666;">
+                <small><i class="fas fa-info-circle"></i> Powered by Advanced AI Technology</small>
+            </div>
+        `;
+        
+        modal.appendChild(modalContent);
+        document.body.appendChild(modal);
+        
+        console.log('Simple AI Chatbot modal created and shown');
+        
+    } catch (error) {
+        console.error('Error creating simple modal:', error);
+        alert('Error opening AI Chatbot: ' + error.message);
+    }
+}
+
+function closeSimpleAIChat() {
+    console.log('Closing simple AI Chatbot...');
+    
+    const modal = document.getElementById('simpleAIChatbot');
+    if (modal) {
+        modal.remove();
+        console.log('Simple AI Chatbot modal removed');
+    }
+}
+
+function sendSimpleMessage() {
+    const input = document.getElementById('simpleMessageInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    const chatBox = document.getElementById('simpleChatBox');
+    
+    // Add user message
+    const userMsg = document.createElement('div');
+    userMsg.style.cssText = `
+        background: #007bff;
+        color: white;
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        text-align: right;
+        max-width: 80%;
+        margin-left: auto;
+    `;
+    userMsg.innerHTML = `<strong>You:</strong> ${message}`;
+    chatBox.appendChild(userMsg);
+    
+    // Add bot typing indicator
+    const typingMsg = document.createElement('div');
+    typingMsg.style.cssText = `
+        background: #6c757d;
+        color: white;
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        max-width: 80%;
+        font-style: italic;
+        opacity: 0.7;
+    `;
+    typingMsg.innerHTML = '<strong>AI Assistant:</strong> Typing...';
+    chatBox.appendChild(typingMsg);
+    
+    // Clear input
+    input.value = '';
+    
+    // Call actual AI server
+    fetch("http://127.0.0.1:5000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        typingMsg.remove();
+        
+        const botMsg = document.createElement('div');
+        botMsg.style.cssText = `
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            max-width: 80%;
+        `;
+        botMsg.innerHTML = `<strong>AI Assistant:</strong> ${data.response}`;
+        chatBox.appendChild(botMsg);
+        
+        // Scroll to bottom
+        chatBox.scrollTop = chatBox.scrollHeight;
+        
+        // Speak the response
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(data.response);
+            utterance.lang = 'en-IN';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+    })
+    .catch(error => {
+        typingMsg.remove();
+        console.error("Error fetching AI response:", error);
+        
+        const errorMsg = document.createElement('div');
+        errorMsg.style.cssText = `
+            background: #dc3545;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            max-width: 80%;
+        `;
+        errorMsg.innerHTML = `<strong>AI Assistant:</strong> Sorry, I'm having trouble connecting to the AI server. Please make sure the AI server is running on port 5000.`;
+        chatBox.appendChild(errorMsg);
+        
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+}
+
+function closeAIChatbot() {
+    console.log('Closing AI Chatbot modal...');
+    
+    const modalElement = document.getElementById('aiChatbotModal');
+    if (modalElement) {
+        // Remove modal classes and hide
+        modalElement.classList.remove('show');
+        modalElement.style.display = 'none';
+        
+        // Remove body classes
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        
+        // Remove backdrop
+        const backdrop = document.getElementById('ai-chatbot-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+        
+        // If modal was dynamically created, remove it completely
+        if (modalElement.hasAttribute('data-dynamic')) {
+            modalElement.remove();
+            // Remove dynamic styles
+            const dynamicStyles = document.getElementById('ai-chatbot-styles');
+            if (dynamicStyles) {
+                dynamicStyles.remove();
+            }
+            console.log('Dynamic modal removed from DOM');
+        } else {
+            console.log('Static modal hidden');
+        }
+        
+        // Re-enable dashboard interaction
+        document.body.style.pointerEvents = '';
+        document.body.style.userSelect = '';
+    }
+}
+
+function sendMessage() {
+    const messageInput = document.getElementById("message");
+    const message = messageInput.value.trim();
+    if (message === "") return;
+
+    appendMessage("You: " + message, 'user-message');
+    messageInput.value = "";
+
+    appendMessage("Bot is typing...", 'bot-message', true);
+
+    fetch("http://127.0.0.1:5000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        removeTypingIndicator();
+        const botResponse = data.response;
+        appendMessage("Bot: " + botResponse, 'bot-message');
+        speakText(botResponse);
+    })
+    .catch(error => {
+        console.error("Error fetching data: ", error);
+        removeTypingIndicator();
+        appendMessage("Error: Could not connect to AI assistant. Please try again.", 'bot-message');
+    });
+}
+
+function appendMessage(text, className, isTemporary = false) {
+    const chatbox = document.getElementById("chatbox");
+    const p = document.createElement("p");
+    p.className = className;
+    p.textContent = text;
+    chatbox.appendChild(p);
+    chatbox.scrollTop = chatbox.scrollHeight;
+    if (isTemporary) p.classList.add('temporary-message');
+}
+
+function removeTypingIndicator() {
+    const tempMessages = document.querySelectorAll('.temporary-message');
+    tempMessages.forEach(msg => msg.remove());
+}
+
+function speakText(text) {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-IN';
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        
+        // Handle video switching
+        const defaultVideo = document.getElementById('default-video');
+        const speakingVideo = document.getElementById('speaking-video');
+        
+        utterance.onstart = function() {
+            if (defaultVideo && speakingVideo) {
+                defaultVideo.pause();
+                defaultVideo.style.display = 'none';
+                speakingVideo.style.display = 'block';
+                speakingVideo.play();
+            }
+        };
+        
+        utterance.onend = function() {
+            if (defaultVideo && speakingVideo) {
+                speakingVideo.pause();
+                speakingVideo.style.display = 'none';
+                defaultVideo.style.display = 'block';
+                defaultVideo.play();
+            }
+        };
+        
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+// Voice recognition
+if ('webkitSpeechRecognition' in window) {
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = "en-IN";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    document.getElementById("voice").addEventListener("click", function() {
+        recognition.start();
+    });
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById("message").value = transcript;
+        sendMessage();
+    };
+
+    recognition.onerror = function(event) {
+        console.error("Speech recognition error: ", event.error);
+        appendMessage("Voice recognition error. Please try again.", 'bot-message');
+    };
+} else {
+    document.getElementById("voice").style.display = "none";
+}
+
+// Enter key to send message
+document.getElementById("message").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+});
+</script>
+{% endblock %}

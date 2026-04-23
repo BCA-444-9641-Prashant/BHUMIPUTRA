@@ -1,0 +1,1066 @@
+<nav class="navbar navbar-expand-lg navbar-dark enhanced-navbar">
+    <div class="container-fluid">
+        <!-- Enhanced Brand Section -->
+        <a class="navbar-brand enhanced-brand" href="{% url 'login' %}">
+            <div class="brand-wrapper">
+                <div class="brand-icon animated-icon">
+                    <i class="fas fa-seedling fa-2x"></i>
+                    <div class="icon-glow"></div>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-main">BHUMIPUTRA</div>
+                    <div class="brand-tagline">Farmer Assistance Platform</div>
+                </div>
+            </div>
+        </a>
+        
+        <!-- Enhanced Toggle Button -->
+        <button class="navbar-toggler enhanced-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+            <div class="toggler-glow"></div>
+        </button>
+        
+        <!-- Enhanced Navigation Content -->
+        <div class="collapse navbar-collapse enhanced-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto enhanced-nav-links">
+                {% if user.is_authenticated %}
+                    {% if user.role == 'farmer' %}
+                        <li class="nav-item">
+                            <a class="nav-link enhanced-link dashboard-link" href="{% url 'farmer_dashboard' %}">
+                                <div class="link-content">
+                                    <span class="link-icon"><i class="fas fa-tachometer-alt"></i></span>
+                                    <span class="link-text">Dashboard</span>
+                                </div>
+                                <div class="link-indicator"></div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link enhanced-link farm-link" href="{% url 'farm_details' %}">
+                                <div class="link-content">
+                                    <span class="link-icon"><i class="fas fa-tractor"></i></span>
+                                    <span class="link-text">My Farm</span>
+                                </div>
+                                <div class="link-indicator"></div>
+                            </a>
+                        </li>
+                    {% elif user.role == 'buyer' %}
+                        <li class="nav-item">
+                            <a class="nav-link enhanced-link buyer-dashboard-link" href="{% url 'buyer_dashboard' %}">
+                                <div class="link-content">
+                                    <span class="link-icon"><i class="fas fa-shopping-cart"></i></span>
+                                    <span class="link-text">Dashboard</span>
+                                </div>
+                                <div class="link-indicator"></div>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    <!-- Common Links -->
+                    <li class="nav-item">
+                        <a class="nav-link enhanced-link scheme-link" href="{% url 'scheme_view' %}">
+                            <div class="link-content">
+                                <span class="link-icon"><i class="fas fa-hand-holding-heart"></i></span>
+                                <span class="link-text">Schemes</span>
+                            </div>
+                            <div class="link-indicator"></div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link enhanced-link crop-link" href="{% url 'crop_cards' %}">
+                            <div class="link-content">
+                                <span class="link-icon"><i class="fas fa-leaf"></i></span>
+                                <span class="link-text">Crops</span>
+                            </div>
+                            <div class="link-indicator"></div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link enhanced-link equipment-link" href="{% url 'equipment_list' %}">
+                            <div class="link-content">
+                                <span class="link-icon"><i class="fas fa-tools"></i></span>
+                                    <span class="link-text">Equipment</span>
+                            </div>
+                            <div class="link-indicator"></div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link enhanced-link course-link" href="{% url 'course_list' %}">
+                            <div class="link-content">
+                                <span class="link-icon"><i class="fas fa-graduation-cap"></i></span>
+                                <span class="link-text">Courses</span>
+                            </div>
+                            <div class="link-indicator"></div>
+                        </a>
+                    </li>
+                    
+                    <!-- Role-specific Links -->
+                    {% if user.role == 'farmer' %}
+                        <li class="nav-item">
+                            <a class="nav-link enhanced-link my-courses-link" href="{% url 'my_courses' %}">
+                                <div class="link-content">
+                                    <span class="link-icon"><i class="fas fa-book-open"></i></span>
+                                    <span class="link-text">My Courses</span>
+                                </div>
+                                <div class="link-indicator"></div>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% if user.role == 'buyer' %}
+                        <li class="nav-item">
+                            <a class="nav-link enhanced-link cart-link" href="{% url 'cart' %}">
+                                <div class="link-content">
+                                    <span class="link-icon"><i class="fas fa-shopping-basket"></i></span>
+                                    <span class="link-text">Cart</span>
+                                    <span class="cart-badge">0</span>
+                                </div>
+                                <div class="link-indicator"></div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link enhanced-link orders-link" href="{% url 'order_history' %}">
+                                <div class="link-content">
+                                    <span class="link-icon"><i class="fas fa-clipboard-list"></i></span>
+                                    <span class="link-text">Orders</span>
+                                </div>
+                                <div class="link-indicator"></div>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                {% elif user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link enhanced-link admin-link" href="{% url 'adminpanel:admin_dashboard' %}">
+                            <div class="link-content">
+                                <span class="link-icon"><i class="fas fa-cog"></i></span>
+                                <span class="link-text">Admin Dashboard</span>
+                            </div>
+                            <div class="link-indicator"></div>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+            
+            <!-- Enhanced User Section -->
+            <ul class="navbar-nav enhanced-user-section">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown enhanced-user-dropdown">
+                        <a class="nav-link dropdown-toggle enhanced-user-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <div class="user-avatar-wrapper">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                    <div class="status-dot online"></div>
+                                </div>
+                                <div class="user-info">
+                                    <div class="user-name">{{ user.username|truncatechars:15 }}</div>
+                                    <div class="user-role">
+                                        {% if user.is_superuser %}
+                                            <span class="role-badge admin">Admin</span>
+                                        {% elif user.role == 'farmer' %}
+                                            <span class="role-badge farmer">Farmer</span>
+                                        {% else %}
+                                            <span class="role-badge buyer">Buyer</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu enhanced-dropdown-menu dropdown-menu-end">
+                            <li class="dropdown-header">
+                                <div class="dropdown-user-info">
+                                    <div class="dropdown-avatar">
+                                        <i class="fas fa-user-circle"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-username">{{ user.username }}</div>
+                                        <small class="text-muted">
+                                            {% if user.is_superuser %}
+                                                Administrator
+                                            {% elif user.role == 'farmer' %}
+                                                Farming Expert
+                                            {% else %}
+                                                Verified Buyer
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            
+                            {% if user.is_superuser %}
+                                <li>
+                                    <a class="dropdown-item enhanced-dropdown-item" href="{% url 'adminpanel:admin_dashboard' %}">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Admin Dashboard</span>
+                                        <span class="dropdown-badge new">New</span>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item enhanced-dropdown-item logout-item" href="{% url 'adminpanel:admin_logout' %}">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a class="dropdown-item enhanced-dropdown-item" href="{% if user.role == 'farmer' %}{% url 'farmer_dashboard' %}{% else %}{% url 'buyer_dashboard' %}{% endif %}">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                </li>
+                                {% if user.role == 'farmer' %}
+                                <li>
+                                    <a class="dropdown-item enhanced-dropdown-item" href="{% url 'farm_details' %}">
+                                        <i class="fas fa-tractor"></i>
+                                        <span>My Farm</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <a class="dropdown-item enhanced-dropdown-item" href="{% url 'my_courses' %}">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        <span>My Courses</span>
+                                        <span class="dropdown-badge">3</span>
+                                    </a>
+                                </li>
+                                {% if user.role == 'buyer' %}
+                                <li>
+                                    <a class="dropdown-item enhanced-dropdown-item" href="{% url 'order_history' %}">
+                                        <i class="fas fa-clipboard-list"></i>
+                                        <span>Order History</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item enhanced-dropdown-item" href="#">
+                                        <i class="fas fa-user-cog"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item enhanced-dropdown-item logout-item" href="{% url 'logout' %}">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link enhanced-login-btn" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link enhanced-signup-btn" href="{% url 'signup' %}">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Sign Up
+                            <span class="signup-badge">Free</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Notification Panel (Hidden by default) -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <h6><i class="fas fa-bell me-2"></i>Notifications</h6>
+            <button class="notification-close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="notification-list">
+            <div class="notification-item unread">
+                <div class="notification-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">New Crop Alert</div>
+                    <div class="notification-text">Wheat prices have increased by 15%</div>
+                    <div class="notification-time">2 hours ago</div>
+                </div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-icon">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">Scheme Update</div>
+                    <div class="notification-text">New government scheme launched for farmers</div>
+                    <div class="notification-time">1 day ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+/* Enhanced Navbar Base Styles */
+.enhanced-navbar {
+    background: linear-gradient(135deg, 
+        var(--primary-green) 0%, 
+        #1a7a4c 30%, 
+        var(--light-green) 100%);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+    padding: 0.8rem 1rem;
+    position: relative;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.enhanced-navbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        var(--accent-orange), 
+        #ffd166, 
+        var(--accent-orange));
+    opacity: 0.8;
+}
+
+/* Enhanced Brand Section */
+.enhanced-brand {
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    margin-right: 2rem;
+}
+
+.enhanced-brand:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.brand-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand-icon {
+    position: relative;
+}
+
+.animated-icon {
+    color: white;
+    animation: gentlePulse 3s infinite ease-in-out;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.icon-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glowPulse 2s infinite alternate;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-main {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(45deg, #fff, #e0ffe0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+}
+
+.brand-tagline {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+/* Enhanced Navigation Links */
+.enhanced-nav-links {
+    display: flex;
+    gap: 5px;
+    padding: 0 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.enhanced-link {
+    padding: 0.8rem 1.2rem !important;
+    margin: 0 2px !important;
+    border-radius: 12px !important;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: rgba(255, 255, 255, 0.9) !important;
+    overflow: hidden;
+}
+
+.enhanced-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.enhanced-link:hover::before {
+    left: 100%;
+}
+
+.link-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.link-icon {
+    font-size: 1.1rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.link-text {
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+.link-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 3px;
+    background: var(--accent-orange);
+    border-radius: 2px;
+    transition: width 0.3s ease, left 0.3s ease;
+}
+
+.enhanced-link:hover .link-indicator {
+    width: 80%;
+}
+
+.enhanced-link:hover .link-icon {
+    transform: translateY(-2px) scale(1.1);
+}
+
+/* Link-specific colors on hover */
+.dashboard-link:hover { background: rgba(41, 128, 185, 0.2) !important; }
+.farm-link:hover { background: rgba(39, 174, 96, 0.2) !important; }
+.scheme-link:hover { background: rgba(155, 89, 182, 0.2) !important; }
+.crop-link:hover { background: rgba(46, 204, 113, 0.2) !important; }
+.equipment-link:hover { background: rgba(52, 152, 219, 0.2) !important; }
+.course-link:hover { background: rgba(142, 68, 173, 0.2) !important; }
+.cart-link:hover { background: rgba(231, 76, 60, 0.2) !important; }
+.orders-link:hover { background: rgba(241, 196, 15, 0.2) !important; }
+
+/* Cart Badge */
+.cart-badge {
+    background: linear-gradient(45deg, var(--accent-orange), #ff6b35);
+    color: white;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 10px;
+    margin-left: 5px;
+    font-weight: bold;
+    animation: badgePulse 2s infinite;
+}
+
+/* Enhanced User Section */
+.enhanced-user-section {
+    margin-left: auto;
+}
+
+.enhanced-user-link {
+    padding: 0.5rem 1rem !important;
+    border-radius: 15px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.enhanced-user-link:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.user-avatar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    position: relative;
+    font-size: 2.2rem;
+    color: white;
+}
+
+.status-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-green);
+}
+
+.status-dot.online {
+    background: #2ecc71;
+}
+
+.user-info {
+    text-align: left;
+}
+
+.user-name {
+    font-weight: 600;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.user-role {
+    margin-top: 2px;
+}
+
+.role-badge {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.role-badge.admin {
+    background: linear-gradient(45deg, #9b59b6, #8e44ad);
+    color: white;
+}
+
+.role-badge.farmer {
+    background: linear-gradient(45deg, #27ae60, #2ecc71);
+    color: white;
+}
+
+.role-badge.buyer {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+}
+
+.dropdown-arrow {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    transition: transform 0.3s ease;
+}
+
+.enhanced-user-dropdown.show .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* Enhanced Dropdown Menu */
+.enhanced-dropdown-menu {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 15px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+    margin-top: 10px !important;
+    min-width: 280px;
+    animation: dropdownSlide 0.3s ease;
+    overflow: hidden;
+}
+
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.dropdown-header {
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+    border-bottom: none;
+}
+
+.dropdown-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+}
+
+.dropdown-avatar {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.dropdown-username {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.enhanced-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.8rem 1rem !important;
+    border-radius: 8px !important;
+    margin: 0.2rem 0.5rem !important;
+    transition: all 0.3s ease !important;
+    color: #333 !important;
+    font-weight: 500;
+}
+
+.enhanced-dropdown-item:hover {
+    background: linear-gradient(45deg, var(--primary-green), var(--light-green)) !important;
+    color: white !important;
+    transform: translateX(5px);
+}
+
+.enhanced-dropdown-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.dropdown-badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.dropdown-badge.new {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.dropdown-badge {
+    background: linear-gradient(45deg, #f39c12, #f1c40f);
+    color: white;
+}
+
+.logout-item {
+    background: rgba(231, 76, 60, 0.1) !important;
+    color: #e74c3c !important;
+}
+
+.logout-item:hover {
+    background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
+    color: white !important;
+}
+
+/* Login/Signup Buttons */
+.enhanced-login-btn {
+    padding: 0.6rem 1.5rem !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 12px !important;
+    color: white !important;
+    font-weight: 500;
+    transition: all 0.3s ease !important;
+    margin-right: 10px;
+}
+
+.enhanced-login-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.enhanced-signup-btn {
+    padding: 0.6rem 1.5rem !important;
+    background: linear-gradient(45deg, var(--accent-orange), #ff6b35) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: white !important;
+    font-weight: 600;
+    transition: all 0.3s ease !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.enhanced-signup-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.enhanced-signup-btn:hover::before {
+    left: 100%;
+}
+
+.enhanced-signup-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+}
+
+.signup-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #2ecc71;
+    color: white;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+/* Toggle Button Enhancement */
+.enhanced-toggler {
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 10px !important;
+    padding: 0.5rem 0.8rem !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.enhanced-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+}
+
+.toggler-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.enhanced-toggler:hover .toggler-glow {
+    opacity: 1;
+}
+
+/* Animations */
+@keyframes gentlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes glowPulse {
+    0% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Notification Panel */
+.notification-panel {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    width: 350px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    display: none;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.notification-header {
+    background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.notification-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: background 0.3s ease;
+}
+
+.notification-item:hover {
+    background: #f8f9fa;
+}
+
+.notification-item.unread {
+    background: #f0f9ff;
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(45deg, var(--primary-green), var(--light-green));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.notification-text {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .enhanced-nav-links {
+        background: transparent;
+        border: none;
+        padding: 1rem 0;
+    }
+    
+    .enhanced-link {
+        border-radius: 10px !important;
+        margin: 0.2rem 0 !important;
+    }
+    
+    .enhanced-user-link {
+        margin-top: 1rem;
+    }
+    
+    .enhanced-dropdown-menu {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .enhanced-brand {
+        padding: 0.5rem;
+        margin-right: 1rem;
+    }
+    
+    .brand-main {
+        font-size: 1.3rem;
+    }
+    
+    .brand-wrapper {
+        gap: 10px;
+    }
+}
+
+/* Active Link States */
+.enhanced-link.active {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.enhanced-link.active .link-indicator {
+    width: 80%;
+}
+
+/* Scrollbar Styling */
+.notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, var(--primary-green), var(--light-green));
+    border-radius: 3px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add active class to current page link
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.enhanced-link');
+    
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+    
+    // Add hover effect to dropdown items
+    const dropdownItems = document.querySelectorAll('.enhanced-dropdown-item');
+    dropdownItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(5px)';
+        });
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+    
+    // Toggle notification panel
+    const notificationBell = document.querySelector('.user-avatar-wrapper');
+    const notificationPanel = document.getElementById('notificationPanel');
+    const closeNotification = document.querySelector('.notification-close');
+    
+    if (notificationBell && notificationPanel) {
+        notificationBell.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown-toggle')) {
+                notificationPanel.style.display = 
+                    notificationPanel.style.display === 'block' ? 'none' : 'block';
+            }
+        });
+    }
+    
+    if (closeNotification) {
+        closeNotification.addEventListener('click', function() {
+            notificationPanel.style.display = 'none';
+        });
+    }
+    
+    // Close notification panel when clicking outside
+    document.addEventListener('click', function(e) {
+        if (notificationPanel && 
+            !notificationPanel.contains(e.target) && 
+            !notificationBell.contains(e.target)) {
+            notificationPanel.style.display = 'none';
+        }
+    });
+    
+    // Add ripple effect to buttons
+    const buttons = document.querySelectorAll('.enhanced-login-btn, .enhanced-signup-btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                width: ${size}px;
+                height: ${size}px;
+                top: ${y}px;
+                left: ${x}px;
+            `;
+            
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+    
+    // Add CSS for ripple animation
+    const rippleStyle = document.createElement('style');
+    rippleStyle.textContent = `
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        .enhanced-login-btn, .enhanced-signup-btn {
+            position: relative;
+            overflow: hidden;
+        }
+    `;
+    document.head.appendChild(rippleStyle);
+    
+    // Add subtle animation to navbar on scroll
+    let lastScrollTop = 0;
+    const navbar = document.querySelector('.enhanced-navbar');
+    
+    window.addEventListener('scroll', function() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            navbar.style.transform = 'translateY(-100%)';
+        } else {
+            navbar.style.transform = 'translateY(0)';
+        }
+        
+        if (scrollTop > 50) {
+            navbar.style.boxShadow = '0 4px 25px rgba(0, 0, 0, 0.25)';
+            navbar.style.backdropFilter = 'blur(20px)';
+        } else {
+            navbar.style.boxShadow = '0 4px 25px rgba(0, 0, 0, 0.15)';
+            navbar.style.backdropFilter = 'blur(10px)';
+        }
+        
+        lastScrollTop = scrollTop;
+    });
+});
+</script>
